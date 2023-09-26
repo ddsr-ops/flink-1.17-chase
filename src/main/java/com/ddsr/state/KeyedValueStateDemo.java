@@ -1,22 +1,21 @@
-package com.ddsr.split;
+package com.ddsr.state;
 
 import com.ddsr.bean.WaterSensor;
 import com.ddsr.functions.WaterSensorMapFunc;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
-import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.KeyedProcessFunction;
 import org.apache.flink.util.Collector;
-import org.apache.flink.util.OutputTag;
 
 import java.time.Duration;
 
 /**
- * @author ddsr, created it at 2023/9/24 10:54
+ * @author ddsr, created it at 2023/9/26 22:37
  */
-public class SideOutputDemo1 {
+public class KeyedValueStateDemo {
     public static void main(String[] args) throws Exception {
+
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setParallelism(1);
 
@@ -29,26 +28,17 @@ public class SideOutputDemo1 {
                                 .withTimestampAssigner((element, ts) -> element.getTs() * 1000L)
                 );
 
-
-        OutputTag<String> warnTag = new OutputTag<>("warn", Types.STRING);
-
-        SingleOutputStreamOperator<WaterSensor> process = sensorDS.keyBy(WaterSensor::getId)
-//                .process(new ProcessFunction<WaterSensor, WaterSensor>() { // Deprecated Use process(KeyedProcessFunction)
-                .process(new KeyedProcessFunction<String, WaterSensor, WaterSensor>() {
+        sensorDS.keyBy(WaterSensor::getId)
+                .process(new KeyedProcessFunction<String, WaterSensor, String>() {
                     @Override
-                    public void processElement(WaterSensor value, KeyedProcessFunction<String, WaterSensor, WaterSensor>.Context ctx, Collector<WaterSensor> out) {
-                        if (value.getVc() > 10) {
-                            ctx.output(warnTag, "vc > 10");
-                        }
-                        out.collect(value);
-                    }
-                });
+                    public void processElement(WaterSensor value, KeyedProcessFunction<String, WaterSensor, String>.Context ctx, Collector<String> out) throws Exception {
 
-        process.print();
-        process.getSideOutput(warnTag).printToErr();
+                    }
+                })
+                .print();
+
 
         env.execute();
-
 
     }
 }
