@@ -6,8 +6,11 @@ import java.util.Objects;
  * @author ddsr, created it at 2023/8/18 21:40
  */
 public class WaterSensor {
+    // sensor id
     public String id;
+    // timestamp
     public Long ts;
+    // vc = watermark?
     public Integer vc;
 
     public WaterSensor() {
