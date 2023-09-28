@@ -58,6 +58,7 @@ public class KeyedListStateDemo {
                                 for (Integer vc : vcListIt) {
                                     vcList.add(vc);
                                 }
+                                // todo: improve the sort
                                 // 2.2 对List进行降序排序
                                 vcList.sort((o1, o2) -> o2 - o1);
                                 // 2.3 只保留最大的3个(list中的个数一定是连续变大，一超过3就立即清理即可)
