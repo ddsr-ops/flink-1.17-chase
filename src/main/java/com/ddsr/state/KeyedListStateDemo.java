@@ -34,7 +34,7 @@ public class KeyedListStateDemo {
                                 .withTimestampAssigner((element, ts) -> element.getTs() * 1000L)
                 );
 
-        sensorDS.keyBy(r -> r.getId())
+        sensorDS.keyBy(WaterSensor::getId)
                 .process(
                         new KeyedProcessFunction<String, WaterSensor, String>() {
 
@@ -43,7 +43,7 @@ public class KeyedListStateDemo {
                             @Override
                             public void open(Configuration parameters) throws Exception {
                                 super.open(parameters);
-                                vcListState = getRuntimeContext().getListState(new ListStateDescriptor<Integer>("vcListState", Types.INT));
+                                vcListState = getRuntimeContext().getListState(new ListStateDescriptor<>("vcListState", Types.INT));
                             }
 
                             @Override
@@ -67,7 +67,7 @@ public class KeyedListStateDemo {
                                     vcList.remove(3);
                                 }
 
-                                out.collect("传感器id为" + value.getId() + ",最大的3个水位值=" + vcList.toString());
+                                out.collect("传感器id为" + value.getId() + ",最大的3个水位值=" + vcList);
 
                                 // 3.更新list状态
                                 vcListState.update(vcList);
