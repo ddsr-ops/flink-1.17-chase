@@ -14,9 +14,12 @@ import org.apache.flink.util.Collector;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
+ * Obtain top 3 vc of every sensor
+ *
  * @author ddsr, created it at 2023/9/28 22:41
  */
 public class KeyedListStateDemo {
@@ -48,6 +51,19 @@ public class KeyedListStateDemo {
 
                             @Override
                             public void processElement(WaterSensor value, Context ctx, Collector<String> out) throws Exception {
+                                /*vcListState.add(value.getVc());
+                                Iterable<Integer> vcIterable = vcListState.get();
+                                List<Integer> vcListForSort = new ArrayList<>();
+                                vcIterable.forEach(vcListForSort::add);
+                                // descend sort
+                                vcListForSort.sort((o1, o2) -> o2 - o1);
+                                if (vcListForSort.size() > 3) {
+                                    vcListForSort.remove(3);
+                                }
+                                out.collect("传感器id为" + value.getId() + ",最大的3个水位值=" + vcListForSort);
+                                vcListState.update(vcListForSort);*/
+
+
                                 // 1.来一条，存到list状态里
                                 vcListState.add(value.getVc());
 
@@ -58,13 +74,14 @@ public class KeyedListStateDemo {
                                 for (Integer vc : vcListIt) {
                                     vcList.add(vc);
                                 }
-                                // todo: improve the sort
                                 // 2.2 对List进行降序排序
-                                vcList.sort((o1, o2) -> o2 - o1);
+//                                vcList.sort((o1, o2) -> o2 - o1);
+                                vcList.sort(Collections.reverseOrder());
                                 // 2.3 只保留最大的3个(list中的个数一定是连续变大，一超过3就立即清理即可)
                                 if (vcList.size() > 3) {
                                     // 将最后一个元素清除（第4个）
-                                    vcList.remove(3);
+//                                    vcList.remove(3);
+                                    vcList = vcList.subList(0, 3); // more efficient comparing with the above
                                 }
 
                                 out.collect("传感器id为" + value.getId() + ",最大的3个水位值=" + vcList);
@@ -74,7 +91,7 @@ public class KeyedListStateDemo {
 
 
 //                                vcListState.get();            //取出 list状态 本组的数据，是一个Iterable
-//                                vcListState.add();            // 向 list状态 本组 添加一个元素
+//                                vcListState.add();            // 向 list状态 本组 添加一个元素, no affection for other key
 //                                vcListState.addAll();         // 向 list状态 本组 添加多个元素
 //                                vcListState.update();         // 更新 list状态 本组数据（覆盖）
 //                                vcListState.clear();          // 清空List状态 本组数据
