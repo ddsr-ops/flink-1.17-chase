@@ -42,7 +42,7 @@ public class KeyedProcessFunctionTopNDemo {
 
         // 最近10秒= 窗口长度， 每5秒输出 = 滑动步长
         /**
-         * TODO 思路二： 使用 KeyedProcessFunction实现
+         * 思路二： 使用 KeyedProcessFunction实现
          * 1、按照vc做keyby，开窗，分别count
          *    ==》 增量聚合，计算 count
          *    ==》 全窗口，对计算结果 count值封装 ，  带上 窗口结束时间的 标签
@@ -131,6 +131,7 @@ public class KeyedProcessFunctionTopNDemo {
 
         @Override
         public void processElement(Tuple3<Integer, Integer, Long> value, Context ctx, Collector<String> out) throws Exception {
+            System.out.println(value);
             // 进入这个方法，只是一条数据，要排序，得到齐才行 ===》 存起来，不同窗口分开存
             // 1. 存到HashMap中
             Long windowEnd = value.f2;
@@ -146,8 +147,9 @@ public class KeyedProcessFunctionTopNDemo {
             }
 
             // 2. 注册一个定时器， windowEnd+1ms即可（
-            // 同一个窗口范围，应该同时输出，只不过是一条一条调用processElement方法，只需要延迟1ms即可（其实甚至 - 1ms也行？）
-            ctx.timerService().registerEventTimeTimer(windowEnd + 1);
+            // 同一个窗口范围，应该同时输出，只不过是一条一条调用processElement方法，只需要延迟1ms即可（其实甚至 - 1ms也行？ 可行， 因为定时器>=则触发动作， -1 ms正是左闭右开的开）
+            System.out.println("Current key: " + ctx.getCurrentKey() + ", timestamp: " + ctx.timestamp() + ", windowEnd: " + windowEnd);
+            ctx.timerService().registerEventTimeTimer(windowEnd - 1);
             // 为什么窗口是左闭右开，如[0, 5), 其实就是[0, 4999], 当watermark进展至4999ms时，即触发上述窗口关窗计算
             // 而定时器执行的criteria： >= registerEventTimeTimer(x)中的x，
 
