@@ -21,7 +21,7 @@ public class OperatorListStateDemo {
         env.setParallelism(2);
 
         env
-                .socketTextStream("hadoop102", 7777)
+                .socketTextStream("ora11g", 7777)
                 .map(new MyCountMapFunction())
                 .print();
 
