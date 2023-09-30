@@ -17,6 +17,7 @@ import java.time.Duration;
 
 /**
  * Compute the sum of vc of every sensor
+ * The type of reducing states is the same as the type of input data
  *
  * @author ddsr, created it at 2023/9/29 19:44
  */
