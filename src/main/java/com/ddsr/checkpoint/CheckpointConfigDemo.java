@@ -18,6 +18,9 @@ public class CheckpointConfigDemo {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(new Configuration());
         env.setParallelism(1);
 
+        // 开启通用增量changelog，要求checkpoint最大并发数为1，其他参数建议在flink-conf.yml中配置
+        env.enableChangelogStateBackend(true);
+
         // 代码中用到hdfs，需要导入hadoop依赖、指定访问hdfs的用户名
         System.setProperty("HADOOP_USER_NAME", "hive");
 
