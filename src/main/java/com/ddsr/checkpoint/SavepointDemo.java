@@ -69,3 +69,13 @@ public class SavepointDemo {
         env.execute();
     }
 }
+
+
+/**
+ * source --> map --> sum --> print
+ *
+ * source --> map --> sum     --> print
+ *                --> process --/
+ *
+ * In this case, process operator is new operator for original topology, which could use savepoint from original topology with uid
+ */
