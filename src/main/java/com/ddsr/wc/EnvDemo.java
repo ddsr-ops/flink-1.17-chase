@@ -23,6 +23,9 @@ public class EnvDemo {
         // Commonly, Not set runtime mode in codes, but use command-line option to set this via -Dexecution.runtime-mode=BATCH
         env.setRuntimeMode(RuntimeExecutionMode.BATCH);
 
+        // Change runtime mode automatically
+        env.setRuntimeMode(RuntimeExecutionMode.AUTOMATIC);
+
         env.readTextFile("input/word.txt")
                 .flatMap(new FlatMapFunction<String, Tuple2<String,Integer>>() {
                     @Override
