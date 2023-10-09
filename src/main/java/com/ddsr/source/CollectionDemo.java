@@ -18,6 +18,10 @@ public class CollectionDemo {
         env.fromElements(Integer.class, 1,3,4,5)
                 .print();
 
+        // type of elements must be the same
+        env.fromElements("3", "3", "5", "5")
+                        .printToErr();
+
         env.execute();
     }
 }
