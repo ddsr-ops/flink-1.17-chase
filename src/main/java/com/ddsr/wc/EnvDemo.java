@@ -14,6 +14,7 @@ import org.apache.flink.util.Collector;
 public class EnvDemo {
     public static void main(String[] args) throws Exception {
         Configuration configuration = new Configuration();
+        // rest web ui port
         configuration.set(RestOptions.BIND_PORT, "8082");
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment(configuration);
 
