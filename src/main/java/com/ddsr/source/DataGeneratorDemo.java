@@ -2,6 +2,7 @@ package com.ddsr.source;
 
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.common.typeinfo.Types;
+import org.apache.flink.api.connector.source.lib.NumberSequenceSource;
 import org.apache.flink.api.connector.source.util.ratelimit.RateLimiterStrategy;
 import org.apache.flink.connector.datagen.source.DataGeneratorSource;
 import org.apache.flink.connector.datagen.source.GeneratorFunction;
@@ -30,8 +31,16 @@ public class DataGeneratorDemo {
 
         );
 
+
+
+
         env.fromSource(dataGeneratorSource, WatermarkStrategy.noWatermarks(),"dataGenerator")
                 .print();
+
+        // An easy way to generate a sequence of numbers
+        NumberSequenceSource numberSequenceSource = new NumberSequenceSource(0, 10);
+        env.fromSource(numberSequenceSource, WatermarkStrategy.noWatermarks(), "numberSequenceSource")
+                        .printToErr();
 
         env.execute();
 

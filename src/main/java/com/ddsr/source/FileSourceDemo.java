@@ -19,9 +19,6 @@ public class FileSourceDemo {
                 .forRecordStreamFormat(new TextLineInputFormat(), new Path("input/word.txt"))
                 .build();
 
-        // todo: use forBulkFileFormat to build batch source
-        FileSource.forBulkFileFormat()
-                        .build();
 
         // <groupId>org.apache.flink</groupId>
         // <artifactId>flink-connector-files</artifactId>
