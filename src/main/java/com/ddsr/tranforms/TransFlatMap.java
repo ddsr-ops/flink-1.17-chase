@@ -2,6 +2,7 @@ package com.ddsr.tranforms;
 
 import com.ddsr.bean.WaterSensor;
 import org.apache.flink.api.common.functions.FlatMapFunction;
+import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.util.Collector;
@@ -24,6 +25,8 @@ public class TransFlatMap {
         );
 
         stream.flatMap(new MyFlatMap()).print();
+
+        stream.flatMap(new MyFlatMap(), Types.STRING).printToErr();
 
         env.execute();
     }
