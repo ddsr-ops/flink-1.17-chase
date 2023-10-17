@@ -7,6 +7,9 @@ import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
 /**
+ * As for unbounded stream, the aggregated state will not be cleared which makes state bigger due to increment of keys.
+ * Therefore , it is recommended to apply aggregation to limited keys.
+ *
  * @author ddsr, created it at 2023/8/18 22:42
  */
 public class AggregationDemo {

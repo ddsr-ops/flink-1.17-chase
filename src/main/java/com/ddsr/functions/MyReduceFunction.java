@@ -8,9 +8,9 @@ import org.apache.flink.api.common.functions.ReduceFunction;
  */
 public class MyReduceFunction implements ReduceFunction<WaterSensor> {
     /**
-     * Invoke reduce functions after keyby
+     * Invoke reduce functions after keyBy
      *
-     * Output type is equal to input types
+     * Output type is equal to input types, engage aggregate function if different
      *
      * When one key with only one record is coming, then not process it, return it directly
      *
