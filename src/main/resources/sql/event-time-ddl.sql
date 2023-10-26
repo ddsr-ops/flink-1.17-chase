@@ -12,3 +12,18 @@ CREATE TABLE EventTable(
 -- 时间戳类型必须是 TIMESTAMP 或者TIMESTAMP_LTZ 类型。但是时间戳一般都是秒或者是毫秒（BIGINT 类型），这种情况可以通过如下方式转换
 -- ts BIGINT,
 -- time_ltz AS TO_TIMESTAMP_LTZ(ts, 3),
+
+
+CREATE TABLE EventTable(
+                           user STRING,
+                           url STRING,
+                           ts BIGINT, -- in seconds
+                           time_ltz AS TO_TIMESTAMP_LTZ(ts, 3), -- 3 means the granularity down to milliseconds
+                           WATERMARK FOR ts AS ts - INTERVAL '5' SECOND
+) WITH (
+      ...
+      );
+
+-- Converts a epoch seconds or epoch milliseconds to a TIMESTAMP_LTZ,
+-- the valid precision is 0 or 3, the 0 represents TO_TIMESTAMP_LTZ(epochSeconds, 0),
+-- the 3 represents TO_TIMESTAMP_LTZ(epochMilliseconds, 3).
