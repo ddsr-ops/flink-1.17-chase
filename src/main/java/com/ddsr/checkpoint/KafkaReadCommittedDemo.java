@@ -36,6 +36,9 @@ public class KafkaReadCommittedDemo {
                  * consumers will not be able to read up to the high watermark when there are in flight transactions.Further, when in read_committed the seekToEnd method will return the LSO
                  */
                 .setProperty(ConsumerConfig.ISOLATION_LEVEL_CONFIG, "read_committed")
+                // If producers enable transaction, events will need to be committed on a checkpoint finished.
+                // The transaction will be committed when the checkpoint is finished.
+                // Events in the transaction will be seen by corresponding consumers after checkpoint is finished.
                 .build();
 
 
