@@ -27,3 +27,15 @@ CREATE TABLE EventTable(
 -- Converts a epoch seconds or epoch milliseconds to a TIMESTAMP_LTZ,
 -- the valid precision is 0 or 3, the 0 represents TO_TIMESTAMP_LTZ(epochSeconds, 0),
 -- the 3 represents TO_TIMESTAMP_LTZ(epochMilliseconds, 3).
+
+-- Flink SQL 提供了几种 WATERMARK 生产策略：
+-- 严格升序：WATERMARK FOR rowtime_column AS rowtime_column。
+-- Flink 任务认为时间戳只会越来越大，也不存在相等的情况，只要相等或者小于之前的，就认为是迟到的数据。
+
+-- 递增：WATERMARK FOR rowtime_column AS rowtime_column - INTERVAL '0.001' SECOND 。
+-- 一般基本不用这种方式。如果设置此类，则允许有相同的时间戳出现。
+
+-- 有界无序： WATERMARK FOR rowtime_column AS rowtime_column – INTERVAL 'string' timeUnit 。
+-- 此类策略就可以用于设置最大乱序时间，假如设置为 WATERMARK FOR rowtime_column AS rowtime_column - INTERVAL '5' SECOND ，
+-- 则生成的是运行 5s 延迟的Watermark。一般都用这种 Watermark 生成策略，此类 Watermark 生成策略通常用于有数据乱序的场景中，
+-- 而对应到实际的场景中，数据都是会存在乱序的，所以基本都使用此类策略。

@@ -13,3 +13,14 @@ CREATE TABLE [IF NOT EXISTS] [catalog_name.][db_name.]table_name
 -- metadata_column_definition
 -- 元数据列是 SQL 标准的扩展，允许访问数据源本身具有的一些元数据。元数据列由 METADATA 关键字标识。
 -- 具体示例，参考table-kafka.sql
+
+-- computed_column_definition
+CREATE TABLE MyTable (
+                         `user_id` BIGINT,
+                         `price` DOUBLE,
+                         `quantity` DOUBLE,
+                         `cost` AS price * quanitity
+) WITH (
+      'connector' = 'kafka'
+      ...
+      );
