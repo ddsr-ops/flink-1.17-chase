@@ -49,4 +49,6 @@ CREATE TABLE KafkaTable (
       'value.format' = 'debezium-json'
       );
 
---
+-- This example shows how to access both Kafka and Debezium metadata fields
+-- from Debezium format indicates the column is from debezium format, field timestamp or table are written by Debezium, for more details refer to Debezium doc
+-- from Kafka connector indicates the column is from Kafka format
