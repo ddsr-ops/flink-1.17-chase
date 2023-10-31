@@ -1,0 +1,1 @@
+DROP [TEMPORARY] TABLE [IF EXISTS] [catalog_name.][db_name.]table_name
