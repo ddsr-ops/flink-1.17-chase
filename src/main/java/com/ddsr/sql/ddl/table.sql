@@ -70,3 +70,18 @@ CREATE TABLE Orders_with_watermark (
 -- 用于基于现有表的定义创建表。此外，用户可以扩展原始表或排除表的某些部分。
 -- 可以使用该子句重用(可能还会覆盖)某些连接器属性，或者向外部定义的表添加水印。
 -- 可增加属性（原表没有的属性），覆盖属性（原表有的属性）。
+
+
+-- CTAS
+CREATE TABLE my_ctas_table
+    WITH (
+        'connector' = 'kafka',
+        ...
+        )
+AS SELECT id, name, age FROM source_table WHERE mod(id, 10) = 0;
+-- This a simple and quickest way to create a table and insert data into it.
+-- 暂不支持创建临时表。
+-- 目前还不支持指定显式列。
+-- 还不支持指定显式水印。
+-- 目前还不支持创建分区表。
+-- 目前还不支持指定主键约束。
