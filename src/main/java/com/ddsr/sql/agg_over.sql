@@ -29,5 +29,6 @@ from ws;
 select id,
        et,
        vc,
-       count(vc) over w as vc1, sum(vc) over w as vc2
+       count(vc) over w as vc1,
+       sum(vc) over w as vc2
 from ws window w as (partition by id order by et rows between 5 preceding and current row);
