@@ -46,3 +46,7 @@ WITH (
   'key.format' = 'json',
   'value.format' = 'json'
 )
+
+-- 查询upsert-kafka表
+-- upsert-kafka 无法从指定的偏移量读取，只会从主题的源读取。如此，才知道整个数据的更新过程。并且通过 -U，+U，+I 等符号来显示数据的变化过程。
+select * from t2
