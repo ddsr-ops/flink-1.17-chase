@@ -28,6 +28,8 @@ CREATE CATALOG myhive WITH (
     'default-database' = 'default',
     'hive-conf-dir' = '/opt/module/hive/conf'
 );
+-- 虽然hive catalog可存储Flink创建的元数据，但手动创建hive catalog，并use catalog catalog_name是必须的
+
 
 -- 6）查看Catalog
 SHOW CATALOGS;
