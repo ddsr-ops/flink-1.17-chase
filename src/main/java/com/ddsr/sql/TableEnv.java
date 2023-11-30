@@ -23,11 +23,29 @@ public class TableEnv {
 //        TableEnvironment.create(environmentSettings);
 
         // Alternative way to create table environment for streaming
+        // Recommend to use this way
         StreamExecutionEnvironment executionEnvironment = StreamExecutionEnvironment.getExecutionEnvironment();
         StreamTableEnvironment tableEnv = StreamTableEnvironment.create(executionEnvironment);
 
-        tableEnv.executeSql("");
+        tableEnv.executeSql("CREATE TABLE source ( \n" +
+                "    id INT, \n" +
+                "    ts BIGINT, \n" +
+                "    vc INT\n" +
+                ") WITH ( \n" +
+                "    'connector' = 'datagen', \n" +
+                "    'rows-per-second'='1', \n" +
+                "    'fields.id.kind'='random', \n" +
+                "    'fields.id.min'='1', \n" +
+                "    'fields.id.max'='10', \n" +
+                "    'fields.ts.kind'='sequence', \n" +
+                "    'fields.ts.start'='1', \n" +
+                "    'fields.ts.end'='1000000', \n" +
+                "    'fields.vc.kind'='random', \n" +
+                "    'fields.vc.min'='1', \n" +
+                "    'fields.vc.max'='100'\n" +
+                ");");
 
+        tableEnv.sqlQuery("select * from source").execute().print();
 
     }
 }
