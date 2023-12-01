@@ -2,6 +2,7 @@ package com.ddsr.sql;
 
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.EnvironmentSettings;
+import org.apache.flink.table.api.Table;
 import org.apache.flink.table.api.TableEnvironment;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 
@@ -45,7 +46,12 @@ public class TableEnv {
                 "    'fields.vc.max'='100'\n" +
                 ");");
 
-        tableEnv.sqlQuery("select * from source").execute().print();
+        Table sourceTable = tableEnv.sqlQuery("select * from source");
+
+        // create temporary view based on query result
+        tableEnv.createTemporaryView("sourceTable", sourceTable);
+
+        tableEnv.executeSql("select * from sourceTable where id > 5").print();
 
     }
 }
