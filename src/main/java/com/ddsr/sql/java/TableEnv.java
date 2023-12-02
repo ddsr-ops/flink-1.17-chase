@@ -1,4 +1,4 @@
-package com.ddsr.sql;
+package com.ddsr.sql.java;
 
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.EnvironmentSettings;
@@ -77,10 +77,11 @@ public class TableEnv {
 
 
         // Table API
+        // Recommend to use SQL API
         tableEnv.from("source")
-                .where($("id").isEqual("5"))
+                .where($("id").isGreater(5))
                 .select($("id"), $("ts"), $("vc"))
-                .insertInto("sink");
+                .executeInsert("sink"); // equal to insertInto("tablePath").execute()
 
 
     }
