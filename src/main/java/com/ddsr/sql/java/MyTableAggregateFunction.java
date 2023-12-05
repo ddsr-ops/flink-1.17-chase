@@ -14,6 +14,8 @@ import static org.apache.flink.table.api.Expressions.call;
 /**
  * 求取一组数中的，最大的两个值
  *
+ * 多进多出 many to many
+ *
  * @author ddsr, created it at 2023/12/4 22:24
  */
 public class MyTableAggregateFunction {
