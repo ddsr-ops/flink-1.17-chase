@@ -44,6 +44,9 @@ public class FirstCep {
         /*
 
           Reference: https://stackoverflow.com/questions/68089043/apache-flink-pattern-detection-does-not-find-any-match/68089972#68089972
+
+          FlinkCEP by default uses EventTime which relies on a WaterMark to help those events proceeding. It may helps if you switch it to ProcessingTime.
+
           Important Note:<p>
 
           CEP relies on being able to sort the event stream by timestamp. This requires that you either (1) use events that have timestamps and provide a WatermarkStrategy,
