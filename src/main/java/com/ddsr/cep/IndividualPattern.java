@@ -50,12 +50,8 @@ public class IndividualPattern {
                 .times(2,4)
                 .greedy();
 
-        // aaa
-        //bbb
-        //ccc
-        //23
-        //ddd
-        // Output of Non-greedy is equal to greedy
+        // aaa bbb ccc 23 ddd
+        // Output of Non-greedy is equal to output of greedy
         //{first=[aaa, bbb]}
         //{first=[aaa, bbb, ccc]}
         //{first=[bbb, ccc]}
@@ -63,27 +59,22 @@ public class IndividualPattern {
         //{first=[bbb, ccc, ddd]}
         //{first=[ccc, ddd]}
         /**
-         * I apologize for the confusion before. My previous explanation seems to be incorrect.
          *
-         * The greedy() method in Flink's CEP library does not change the behavior of matching patterns in the way I described earlier. The greedy() method is applied to an optional state and makes it "greedy" which means that it will take precedence over the following state.
-         *
-         * Regardless of whether greedy() is applied or not, for a pattern with .times(2, 4), Flink's CEP library will try to match as many events as possible within the specified range (2 to 4 in your case).
-         *
-         * If the pattern is greedy(), and it's used with an optional state, then it will try to match as many events as possible for this state before moving on to the next state, but in your case, there's only one state, so greedy() doesn't change the behavior.
-         *
-         * That's why you're seeing the same output for both cases. I apologize for the oversight in my previous responses.
-         *
-         * I hope this clears up the confusion. Please let me know if you have any further questions.
-         *
+         * The greedy() method in Flink's CEP library does not change the behavior of matching patterns in the way I described earlier.
+         * The greedy() method is applied to an optional state and makes it "greedy" which means that it will take precedence over the following state.
+         * Regardless of whether greedy() is applied or not, for a pattern with .times(2, 4), Flink's CEP library will try to match as many events as possible
+         * within the specified range (2 to 4 in your case).If the pattern is greedy(), and it's used with an optional state, then it will try to match
+         * as many events as possible for this state before moving on to the next state,but in your case, there's only one state, so greedy() doesn't change the behavior.
+         * That's why you're seeing the same output for both cases. I apologize for the oversight in my previous responses.I hope this clears up the confusion.
          *
          * The "23" is between "ccc" and "ddd", why does it not break the match?
-         *
-         * In Flink's Complex Event Processing (CEP) library, the pattern matching does not necessarily need to occur on consecutive events. There can be other events in between the events that match a pattern.
-         *
-         * In your case, the pattern is defined to match strings of length 3, and you have specified that it should match 2 to 4 times. When the input "23" comes, it does not match the pattern, so it is simply ignored by the pattern matcher. The next event "ddd" does match the pattern, so it can be included in a sequence with any of the previous matching events that are still within the reach of the pattern.
-         *
-         * So, the "23" does not break the match, it's just skipped over because it does not meet the pattern condition. This is why you can get matches ccc, ddd and bbb, ccc, ddd after the "23" event. If you want the pattern to match strictly consecutively, you can use next() instead of where() in the pattern definition.
-         *
+         * In Flink's Complex Event Processing (CEP) library, the pattern matching does not necessarily need to occur on consecutive events. There can be other
+         * events in between the events that match a pattern.
+         * In your case, the pattern is defined to match strings of length 3, and you have specified that it should match 2 to 4 times. When the input "23" comes,
+         * it does not match the pattern, so it is simply ignored by the pattern matcher. The next event "ddd" does match the pattern, so it can be included in a
+         * sequence with any of the previous matching events that are still within the reach of the pattern. So, the "23" does not break the match, it's just skipped
+         * over because it does not meet the pattern condition. This is why you can get matches ccc, ddd and bbb, ccc, ddd after the "23" event. If you want the
+         * pattern to match strictly consecutively, you can use next() instead of where() in the pattern definition.
          * Here's how you can define the pattern to enforce strict consecutive match:
          *
          *
