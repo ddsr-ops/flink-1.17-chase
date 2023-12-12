@@ -49,7 +49,6 @@ public class IndividualPattern {
                 .where(SimpleCondition.of(s -> s.length() == 3))
                 .times(2,4)
                 .greedy();
-
         // aaa bbb ccc 23 ddd
         // Output of Non-greedy is equal to output of greedy
         //{first=[aaa, bbb]}
@@ -58,6 +57,8 @@ public class IndividualPattern {
         //{first=[aaa, bbb, ccc, ddd]}
         //{first=[bbb, ccc, ddd]}
         //{first=[ccc, ddd]}
+
+
         /**
          *
          * The greedy() method in Flink's CEP library does not change the behavior of matching patterns in the way I described earlier.
@@ -77,16 +78,56 @@ public class IndividualPattern {
          * pattern to match strictly consecutively, you can use next() instead of where() in the pattern definition.
          * Here's how you can define the pattern to enforce strict consecutive match:
          *
-         *
          * Copied! ✅
          * 📝 Copy Code
-         * pattern = Pattern.<String>begin("first")
-         *         .next(SimpleCondition.of(s -> s.length() == 3))
-         *         .times(2,4).greedy();
+         * Pattern<String, ?> pattern = Pattern.<String>begin("start")
+         *     .where(new SimpleCondition<String>() {
+         *       @Override
+         *       public boolean filter(String value) throws Exception {
+         *         return value.length() == 3;
+         *       }
+         *     })
+         *     .next("middle")
+         *     .where(new SimpleCondition<String>() {
+         *       @Override
+         *       public boolean filter(String value) throws Exception {
+         *         return value.length() == 3;
+         *       }
+         *     })
+         *     .times(1, 3);
          * With this definition, any event that does not match the condition will break the sequence.
          *
          *
          */
+
+        /*
+         * test case: aaa bbb ccc 23 ddd
+         * {start=[aaa], middle=[bbb]}
+         * {start=[aaa], middle=[bbb, ccc]}
+         * {start=[bbb], middle=[ccc]}
+         * {start=[aaa], middle=[bbb, ccc, ddd]}
+         * {start=[bbb], middle=[ccc, ddd]}
+         */
+        pattern = Pattern.<String>begin("start")
+                .where(new SimpleCondition<String>() {
+                    @Override
+                    public boolean filter(String value) throws Exception {
+                        return value.length() == 3;
+                    }
+                })
+                .next("middle")
+                .where(new SimpleCondition<String>() {
+                    @Override
+                    public boolean filter(String value) throws Exception {
+                        return value.length() == 3;
+                    }
+                })
+                .times(1, 3);
+
+        pattern = Pattern.<String>begin("start")
+                .where(SimpleCondition.of(value -> value.length() == 3))
+                .times(3); // consecutive or non-consecutive
+//                .consecutive();
 
         PatternStream<String> patternStream = CEP.pattern(ds, pattern)
                 .inProcessingTime();
