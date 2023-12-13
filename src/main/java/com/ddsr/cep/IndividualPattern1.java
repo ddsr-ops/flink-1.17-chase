@@ -39,6 +39,15 @@ public class IndividualPattern1 {
                 .next("next")
                 .where(SimpleCondition.of(s -> s.startsWith("b")));
 
+        // test case: 1 b 222 b 333 b3 b4 555 b5, output:
+        // The next continuity of timesOrMore is a string starting with b
+        // output: 222 333 b3; 222 333 555 b5; 333 555 b5
+        pattern = Pattern.<String>begin("start")
+                .where(SimpleCondition.of(s -> s.length() == 3))
+                .timesOrMore(2)
+                .next("next")
+                .where(SimpleCondition.of(s -> s.startsWith("b")));
+
         PatternStream<String> patternStream = CEP.pattern(ds, pattern).inProcessingTime();
 
         patternStream.process(new PatternProcessFunction<String, String>() {
