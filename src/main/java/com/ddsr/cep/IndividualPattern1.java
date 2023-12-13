@@ -4,6 +4,7 @@ import org.apache.flink.cep.CEP;
 import org.apache.flink.cep.PatternStream;
 import org.apache.flink.cep.functions.PatternProcessFunction;
 import org.apache.flink.cep.pattern.Pattern;
+import org.apache.flink.cep.pattern.conditions.IterativeCondition;
 import org.apache.flink.cep.pattern.conditions.SimpleCondition;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
@@ -45,6 +46,7 @@ public class IndividualPattern1 {
         pattern = Pattern.<String>begin("start")
                 .where(SimpleCondition.of(s -> s.length() == 3))
                 .timesOrMore(2)
+                .optional() // zero , 2 or more occurrences
                 .next("next")
                 .where(SimpleCondition.of(s -> s.startsWith("b")));
 
