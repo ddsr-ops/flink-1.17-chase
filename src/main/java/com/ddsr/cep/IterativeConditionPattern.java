@@ -30,6 +30,8 @@ public class IterativeConditionPattern {
         Pattern<String, ?> pattern = Pattern.<String>begin("start")
                 .next("middle")
                 .where(new IterativeCondition<String>() {
+                    // The call to ctx.getEventsForPattern(...) finds all the previously accepted events for a given
+                    // potential match. The cost of this operation can vary, so when implementing your condition, try to minimize its use.
                     @Override
                     public boolean filter(String value, Context<String> ctx) throws Exception {
                         return Integer.parseInt(value) >= Integer.parseInt(ctx.getEventsForPattern("start").iterator().next());
