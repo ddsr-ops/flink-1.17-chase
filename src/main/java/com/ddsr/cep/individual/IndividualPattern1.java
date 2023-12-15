@@ -1,4 +1,4 @@
-package com.ddsr.cep;
+package com.ddsr.cep.individual;
 
 import org.apache.flink.cep.CEP;
 import org.apache.flink.cep.PatternStream;
@@ -26,7 +26,7 @@ public class IndividualPattern1 {
 
         Pattern<String, String> pattern = Pattern.<String>begin("start")
                 .where(SimpleCondition.of(s -> s.length() == 3))
-                .oneOrMore(); // expect one or more occurrences
+                .oneOrMore(); // expect one or more occurrences, a relaxed contiguity
 
         // test case: 1 b 22 b 333 b3, output:
         // {next=[b]}
@@ -35,7 +35,7 @@ public class IndividualPattern1 {
         // {next=[b3]}
         pattern = Pattern.<String>begin("start")
                 .where(SimpleCondition.of(s -> s.length() == 3))
-                .oneOrMore()
+                .oneOrMore() // a relaxed continuity
                 .optional()
                 .next("next")
                 .where(SimpleCondition.of(s -> s.startsWith("b")));
@@ -45,7 +45,7 @@ public class IndividualPattern1 {
         // output: 222 333 b3; 222 333 555 b5; 333 555 b5
         pattern = Pattern.<String>begin("start")
                 .where(SimpleCondition.of(s -> s.length() == 3))
-                .timesOrMore(2)
+                .timesOrMore(2) // a relaxed continuity
                 .optional() // zero , 2 or more occurrences
                 .next("next")
                 .where(SimpleCondition.of(s -> s.startsWith("b")));

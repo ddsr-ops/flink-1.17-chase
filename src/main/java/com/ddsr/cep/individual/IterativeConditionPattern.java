@@ -1,4 +1,4 @@
-package com.ddsr.cep;
+package com.ddsr.cep.individual;
 
 import org.apache.flink.cep.CEP;
 import org.apache.flink.cep.PatternStream;

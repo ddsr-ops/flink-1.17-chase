@@ -1,4 +1,4 @@
-package com.ddsr.cep;
+package com.ddsr.cep.individual;
 
 import org.apache.flink.cep.CEP;
 import org.apache.flink.cep.PatternStream;
@@ -32,22 +32,22 @@ public class IndividualPattern {
                 // exact 4 occurrences
 //                .times(4, 4);
                 // expecting 2, 3 or 4 occurrences
-                // .times(2, 4);
+                // .times(2, 4); // a relaxed internal contiguity
                 // exact 4 occurrences , each event arrives no more than 3 seconds after the previous event.
-                .times(4, Time.seconds(3));
+                .times(4, Time.seconds(3)); // a relaxed internal contiguity
 
         // test case: aaa b, output b
         // test case: aaa ccc b, output {first=[aaa, ccc], second=[b]} and b
         pattern = Pattern.<String>begin("first")
                 .where(SimpleCondition.of(s -> s.length() == 3))
-                .times(2).optional()
+                .times(2).optional() // a relaxed internal contiguity
                 .next("second")
                 .where(SimpleCondition.of(s -> s.startsWith("b")));
 
         // expecting 2, 3 or 4 occurrences and repeating as many as possible
         pattern = Pattern.<String>begin("first")
                 .where(SimpleCondition.of(s -> s.length() == 3))
-                .times(2,4)
+                .times(2,4) // a relaxed internal contiguity
                 .greedy();
         // aaa bbb ccc 23 ddd
         // Output of Non-greedy is equal to output of greedy
@@ -122,7 +122,7 @@ public class IndividualPattern {
                         return value.length() == 3;
                     }
                 })
-                .times(1, 3);
+                .times(1, 3); // a relaxed internal contiguity
 
         pattern = Pattern.<String>begin("start")
                 .where(SimpleCondition.of(value -> value.length() == 3))

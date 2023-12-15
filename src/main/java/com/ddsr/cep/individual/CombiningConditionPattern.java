@@ -1,4 +1,4 @@
-package com.ddsr.cep;
+package com.ddsr.cep.individual;
 
 import org.apache.flink.cep.CEP;
 import org.apache.flink.cep.PatternStream;
@@ -31,10 +31,10 @@ public class CombiningConditionPattern {
                 .or(SimpleCondition.of(s -> s.length() == 3));
 
         // Define a patter, matching the event that starts with 'a' and length is 2 or 3
-        pattern = Pattern.<String>begin("start")
-                .where(SimpleCondition.of(s -> s.startsWith("a")))
-                .where(SimpleCondition.of(s -> s.length() == 2)) // and
-                .or(SimpleCondition.of(s -> s.length() == 3)); // or
+//        pattern = Pattern.<String>begin("start")
+//                .where(SimpleCondition.of(s -> s.startsWith("a")))
+//                .where(SimpleCondition.of(s -> s.length() == 2)) // and
+//                .or(SimpleCondition.of(s -> s.length() == 3)); // or
 
         // Define a pattern which match the event that starts with 'a' one or more occurrences, until the event starts with 'b' occurs
         // test case: "a1" "c" "a2" "b" "a3", output:
@@ -50,10 +50,11 @@ public class CombiningConditionPattern {
         // of 'a' until 'b', which are {a1, a2}, {a1}, and {a2}. After 'b', 'a3' comes in and starts a new sequence,
         // hence {a3} is also output. However, because 'a3' comes after 'b', it is not considered part of the sequence
         // before 'b', so {a2, a3} is not output.
-//        pattern = Pattern.<String>begin("start")
-//                .where(SimpleCondition.of(s -> s.startsWith("a")))
-//                .timesOrMore(1)
-//                .until(SimpleCondition.of(s -> s.startsWith("b")));
+        pattern = Pattern.<String>begin("start")
+                .where(SimpleCondition.of(s -> s.startsWith("a")))
+                .timesOrMore(1) // a relaxed continuity
+                .until(SimpleCondition.of(s -> s.startsWith("b"))); // It allows for cleaning state for corresponding
+                                                                    // pattern on event-based condition.
 
 
         PatternStream<String> patternStream = CEP.pattern(ds, pattern).inProcessingTime();
