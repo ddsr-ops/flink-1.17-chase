@@ -156,7 +156,7 @@ public class CombiningPattern {
                 .where(SimpleCondition.of(s -> s.startsWith("b")))
                 .oneOrMore()
                 .next("end")
-                .where(SimpleCondition.of(s -> s.startsWith("c")))
+                .where(SimpleCondition.of(s -> s.startsWith("c")));
 
 
 
