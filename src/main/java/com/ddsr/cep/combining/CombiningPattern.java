@@ -150,6 +150,15 @@ public class CombiningPattern {
                 .where(SimpleCondition.of(s -> s.startsWith("b")))
                 .within(Time.seconds(3));
 
+        pattern = Pattern.<String>begin("start")
+                .where(SimpleCondition.of(s -> s.startsWith("a")))
+                .next("middle")
+                .where(SimpleCondition.of(s -> s.startsWith("b")))
+                .oneOrMore()
+                .next("end")
+                .where(SimpleCondition.of(s -> s.startsWith("c")))
+
+
 
         PatternStream<String> patternStream = CEP.pattern(ds, pattern).inProcessingTime();
 
