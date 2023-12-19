@@ -130,10 +130,10 @@ public class CombiningPattern {
         // with 'b', non-deterministic contiguity
         // Test case: a c b1 b2 d b3 a b4, output:
         // {start=[a], middle=[b1]}
-        //{start=[a], middle=[b2]}
-        //{start=[a], middle=[b3]}
-        //{start=[a], middle=[b4]}
-        //{start=[a], middle=[b4]}
+        // {start=[a], middle=[b2]}
+        // {start=[a], middle=[b3]}
+        // {start=[a], middle=[b4]}
+        // {start=[a], middle=[b4]}
         pattern = Pattern.<String>begin("start")
                 .where(SimpleCondition.of(s -> s.startsWith("a")))
                 .followedByAny("middle")
@@ -150,14 +150,68 @@ public class CombiningPattern {
                 .where(SimpleCondition.of(s -> s.startsWith("b")))
                 .within(Time.seconds(3));
 
+        // Strict Contiguity: "a b+ c"
+        // Test case: a d c b1 b2 c a bx c a c
+        // Output: {start=[a], middle=[bx], end=[c]}
+        //         {start=[a], end=[c]}
         pattern = Pattern.<String>begin("start")
                 .where(SimpleCondition.of(s -> s.startsWith("a")))
-                .next("middle")
+                .next("middle").oneOrMore().optional().consecutive()
                 .where(SimpleCondition.of(s -> s.startsWith("b")))
-                .oneOrMore()
                 .next("end")
                 .where(SimpleCondition.of(s -> s.startsWith("c")));
 
+        // Relaxed Contiguity: "a b+ c"
+        // Test case: a d c b1 b2 c a bx c a c
+        // Output : {start=[a], end=[c]}
+        //          {start=[a], middle=[b1, b2], end=[c]}
+        //          {start=[a], middle=[b1], end=[c]}
+        //          {start=[a], middle=[b1, b2, bx], end=[c]}
+        //          {start=[a], end=[c]}
+        //          {start=[a], middle=[bx], end=[c]}
+        //          {start=[a], end=[c]}
+        pattern = Pattern.<String>begin("start")
+                .where(SimpleCondition.of(s -> s.startsWith("a")))
+                .followedBy("middle").oneOrMore().optional()
+                .where(SimpleCondition.of(s -> s.startsWith("b")))
+                .followedBy("end")
+                .where(SimpleCondition.of(s -> s.startsWith("c")));
+
+        // Non-Deterministic Relaxed Contiguity: "a b+ c"
+        // Test case: a d c b1 b2 c a bx c a c
+        // Output:
+        /*
+         * {start=[a], end=[c]}
+         * {start=[a], middle=[b1, b2], end=[c]}
+         * {start=[a], end=[c]}
+         * {start=[a], middle=[b2], end=[c]}
+         * {start=[a], middle=[b1], end=[c]}
+         * {start=[a], middle=[b1, b2, bx], end=[c]}
+         * {start=[a], middle=[b1, b2], end=[c]}
+         * {start=[a], middle=[b2, bx], end=[c]}
+         * {start=[a], end=[c]}
+         * {start=[a], middle=[bx], end=[c]}
+         * {start=[a], middle=[b2], end=[c]}
+         * {start=[a], middle=[b1], end=[c]}
+         * {start=[a], end=[c]}
+         * {start=[a], middle=[bx], end=[c]}
+         * {start=[a], middle=[b1, b2, bx], end=[c]}
+         * {start=[a], middle=[b1, b2], end=[c]}
+         * {start=[a], middle=[b2, bx], end=[c]}
+         * {start=[a], middle=[b2], end=[c]}
+         * {start=[a], end=[c]}
+         * {start=[a], middle=[bx], end=[c]}
+         * {start=[a], middle=[b1], end=[c]}
+         * {start=[a], middle=[bx], end=[c]}
+         * {start=[a], end=[c]}
+         * {start=[a], end=[c]}
+         */
+        pattern = Pattern.<String>begin("start")
+                .where(SimpleCondition.of(s -> s.startsWith("a")))
+                .followedByAny("middle").oneOrMore().optional()
+                .where(SimpleCondition.of(s -> s.startsWith("b")))
+                .followedByAny("end")
+                .where(SimpleCondition.of(s -> s.startsWith("c")));
 
 
         PatternStream<String> patternStream = CEP.pattern(ds, pattern).inProcessingTime();
