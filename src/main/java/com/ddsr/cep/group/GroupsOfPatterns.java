@@ -58,6 +58,20 @@ public class GroupsOfPatterns {
                                 .where(SimpleCondition.of(s -> s.startsWith("d")))
                 );
 
+        // GroupPattern of followedByAny
+        // Test case: a1 c1 b1 3 c2 4 d1 a2 c3 b3 c2 2 d2,
+        // Output: {start1=[a1], middle1=[b1], start4=[c2], middle4=[d1]}
+        //{start1=[a1], middle1=[b1], start4=[c3], middle4=[d2]}
+        //{start1=[a1], middle1=[b1], start4=[c2], middle4=[d2]}
+        //{start1=[a2], middle1=[b3], start4=[c2], middle4=[d2]}
+        pattern = start
+                .followedByAny(
+                        Pattern.<String>begin("start4")
+                                .where(SimpleCondition.of(s -> s.startsWith("c")))
+                                .followedBy("middle4")
+                                .where(SimpleCondition.of(s -> s.startsWith("d")))
+                );
+
 
         PatternStream<String> patternStream = CEP.pattern(ds, pattern).inProcessingTime();
 
