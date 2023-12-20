@@ -25,14 +25,25 @@ public class GroupsOfPatterns {
 
         DataStreamSource<String> ds = env.socketTextStream("192.168.20.126", 7777);
 
-        // GroupPattern of begin
+        // GroupPattern of begin, comment the following patterns after this pattern if testing
         // Test case: a c bx by, output: a bx
         GroupPattern<String, String> pattern = Pattern.begin(
-                Pattern.<String>begin("start")
+                Pattern.<String>begin("start1")
                         .where(SimpleCondition.of(s -> s.startsWith("a")))
-                        .followedBy("middle")
+                        .followedBy("middle1")
                         .where(SimpleCondition.of(s -> s.startsWith("b")))
         );
+
+        // GroupPattern of next, comment the following patterns after this pattern if testing
+        // Test case: a c b1 3 c1 4 d2 a c b1 c 2 d1, output: {start1=[a], middle1=[b1], start2=[c], middle2=[d1]}
+        // Note: the '3' breaks the next match, so no output for a b1 c1 d2
+        pattern = pattern
+                .next(
+                        Pattern.<String>begin("start2")
+                                .where(SimpleCondition.of(s -> s.startsWith("c")))
+                                .followedBy("middle2")
+                                .where(SimpleCondition.of(s -> s.startsWith("d")))
+                );
 
         PatternStream<String> patternStream = CEP.pattern(ds, pattern).inProcessingTime();
 
