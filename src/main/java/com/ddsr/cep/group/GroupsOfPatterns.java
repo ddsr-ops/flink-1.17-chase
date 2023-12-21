@@ -38,7 +38,7 @@ public class GroupsOfPatterns {
         // GroupPattern of next
         // Test case: a c b1 3 c1 4 d2 a c b1 c 2 d1, output: {start1=[a], middle1=[b1], start2=[c], middle2=[d1]}
         // Note: the '3' breaks the next match, so no output for a b1 c1 d2
-        GroupPattern<String, String> pattern = start
+        Pattern<String, String> pattern = start
                 .next(
                         Pattern.<String>begin("start2")
                                 .where(SimpleCondition.of(s -> s.startsWith("c")))
@@ -72,6 +72,12 @@ public class GroupsOfPatterns {
                                 .where(SimpleCondition.of(s -> s.startsWith("d")))
                 );
 
+        // Not Next
+        // Test case: a x b c d a y b s
+        // Output : {start1=[a], middle1=[b]}, due to a y b s
+        pattern = start
+                .notNext("not_next")
+                .where(SimpleCondition.of(s -> s.startsWith("c")));
 
         PatternStream<String> patternStream = CEP.pattern(ds, pattern).inProcessingTime();
 
