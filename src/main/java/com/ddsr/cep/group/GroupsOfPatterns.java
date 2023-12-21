@@ -8,6 +8,7 @@ import org.apache.flink.cep.pattern.Pattern;
 import org.apache.flink.cep.pattern.conditions.SimpleCondition;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.util.Collector;
 
 import java.util.List;
@@ -78,6 +79,16 @@ public class GroupsOfPatterns {
         pattern = start
                 .notNext("not_next")
                 .where(SimpleCondition.of(s -> s.startsWith("c")));
+
+
+        // Not Followed used in conjunction with within, NotFollowedBy is not supported without windowTime as a last part
+        // of a Pattern!
+        // Test case: a1 x b1 c1 d a1 y b1 s a2 b2 z c3, input quickly
+        // Output: {start1=[a1], middle1=[b1]}, a2 b2 will not match(output) because c3 arrives
+        pattern = start
+                .notFollowedBy("not_followed_by")
+                .where(SimpleCondition.of(s -> s.startsWith("c")))
+                .within(Time.seconds(5));
 
         PatternStream<String> patternStream = CEP.pattern(ds, pattern).inProcessingTime();
 
