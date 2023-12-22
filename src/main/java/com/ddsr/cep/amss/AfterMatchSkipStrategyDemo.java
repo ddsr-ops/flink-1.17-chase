@@ -5,6 +5,8 @@ import org.apache.flink.cep.PatternStream;
 import org.apache.flink.cep.functions.PatternProcessFunction;
 import org.apache.flink.cep.nfa.aftermatch.AfterMatchSkipStrategy;
 import org.apache.flink.cep.nfa.aftermatch.NoSkipStrategy;
+import org.apache.flink.cep.nfa.aftermatch.SkipToFirstStrategy;
+import org.apache.flink.cep.nfa.aftermatch.SkipToLastStrategy;
 import org.apache.flink.cep.pattern.Pattern;
 import org.apache.flink.cep.pattern.conditions.SimpleCondition;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
@@ -91,14 +93,52 @@ public class AfterMatchSkipStrategyDemo {
         pattern = Pattern.<String>begin("start", skipToNext)
                 .where(SimpleCondition.of(value -> value.startsWith("a")))
                 .oneOrMore()
-                .greedy()
                 .followedBy("middle")
                 .where(SimpleCondition.of(value -> value.startsWith("b")));
 
+        AfterMatchSkipStrategy skipPastLastEvent = AfterMatchSkipStrategy.skipPastLastEvent();
 
+        // Test case: a1 a2 a3 b
+        // Output: {start=[a1, a2, a3], middle=[b]}
         // 跳过所有子匹配（SKIP_PAST_LAST_EVENT）
         //代码调用 AfterMatchSkipStrategy.skipPastLastEvent()。找到 a1 开始的匹配（a1 a2 a3 b）之后，直接跳过所有 a1 直到 a3
         // 开头的匹配，相当于把这些子匹配都跳过了。最终得到（a1 a2 a3 b），这是最为精简的跳过策略。
+        pattern = Pattern.<String>begin("start", skipPastLastEvent)
+                .where(SimpleCondition.of(value -> value.startsWith("a")))
+                .oneOrMore()
+                .followedBy("middle")
+                .where(SimpleCondition.of(value -> value.startsWith("b")));
+
+        SkipToFirstStrategy skipToFirstStrategy = AfterMatchSkipStrategy.skipToFirst("start");
+
+        // Test case: a1 a2 a3 b
+        // Output: {start=[a1, a2, a3], middle=[b]}
+        // {start=[a1, a2], middle=[b]}
+        // {start=[a1], middle=[b]}
+        // 跳至第一个（SKIP_TO_FIRST[a]）
+        // 代码调用 AfterMatchSkipStrategy.skipToFirst(“a”)，这里传入一个参数，指明跳至哪个模式的第一个匹配事件。找到 a1 开始的匹配
+        // （a1 a2 a3 b）后，跳到以最开始一个 a（也就是 a1）为开始的匹配，相当于只留下 a1 开始的匹配。最终得到（a1 a2 a3 b），
+        // （a1 a2 b），（a1 b）。
+        pattern = Pattern.<String>begin("start", skipToFirstStrategy)
+                .where(SimpleCondition.of(value -> value.startsWith("a")))
+                .oneOrMore()
+                .followedBy("middle")
+                .where(SimpleCondition.of(value -> value.startsWith("b")));
+
+        SkipToLastStrategy skipToLastStrategy = AfterMatchSkipStrategy.skipToLast("start");
+
+        // Test case: a1 a2 a3 b
+        // Output: {start=[a1, a2, a3], middle=[b]}
+        // {start=[a3], middle=[b]}
+        // 跳至最后一个（SKIP_TO_LAST[a]）
+        // 代码调用 AfterMatchSkipStrategy.skipToLast(“a”)，同样传入一个参数，指明跳至哪个模式的最后一个匹配事件。找到 a1 开始的匹配
+        // （a1 a2 a3 b）后，跳过所有 a1、a2 开始的匹配，跳到以最后一个 a（也就是 a3）为开始的匹配。最终得到（a1 a2 a3 b），（a3 b）。
+        pattern = Pattern.<String>begin("start", skipToLastStrategy)
+                .where(SimpleCondition.of(value -> value.startsWith("a")))
+                .oneOrMore()
+                .followedBy("middle")
+                .where(SimpleCondition.of(value -> value.startsWith("b")));
+
 
         PatternStream<String> patternStream = CEP.pattern(ds, pattern).inProcessingTime();
 
