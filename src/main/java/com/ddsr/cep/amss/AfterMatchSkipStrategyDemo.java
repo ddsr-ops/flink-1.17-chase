@@ -56,6 +56,9 @@ public class AfterMatchSkipStrategyDemo {
         //{start=[a2, a3], middle=[b]}
         //{start=[a2], middle=[b]}
         //{start=[a3], middle=[b]}
+        // noSkipStrategy is the default strategy
+        // 不跳过（NO_SKIP）
+        // 代码调用 AfterMatchSkipStrategy.noSkip()。这是默认策略，所有可能的匹配都会输出。所以这里会输出完整的 6 个匹配。
         Pattern<String, String> pattern = Pattern.<String>begin("start", noSkipStrategy)
                 .where(SimpleCondition.of(value -> value.startsWith("a")))
                 .oneOrMore()
@@ -68,12 +71,34 @@ public class AfterMatchSkipStrategyDemo {
         // {start=[a1, a2, a3], middle=[b]}
         // {start=[a2, a3], middle=[b]}
         // {start=[a3], middle=[b]}
-        pattern = Pattern.<String>begin("start")
+        pattern = Pattern.<String>begin("start", noSkipStrategy)
                 .where(SimpleCondition.of(value -> value.startsWith("a")))
                 .oneOrMore()
                 .greedy()
                 .followedBy("middle")
                 .where(SimpleCondition.of(value -> value.startsWith("b")));
+
+        AfterMatchSkipStrategy skipToNext = AfterMatchSkipStrategy.skipToNext();
+
+        // Test case: a1 a2 a3 b
+        // Output:
+        // {start=[a1, a2, a3], middle=[b]}
+        // {start=[a2, a3], middle=[b]}
+        // {start=[a3], middle=[b]}
+        // 跳至下一个（SKIP_TO_NEXT）
+        // 找到一个 a1 开始的最大匹配之后，跳过a1 开始的所有其他匹配，直接从下一个 a2 开始匹配起。当然 a2 也是如此跳过其他匹配。
+        // 最终得到（a1 a2 a3 b），（a2 a3 b），（a3 b）。可以看到，这种跳过策略跟使用.greedy()效果是相同的。
+        pattern = Pattern.<String>begin("start", skipToNext)
+                .where(SimpleCondition.of(value -> value.startsWith("a")))
+                .oneOrMore()
+                .greedy()
+                .followedBy("middle")
+                .where(SimpleCondition.of(value -> value.startsWith("b")));
+
+
+        // 跳过所有子匹配（SKIP_PAST_LAST_EVENT）
+        //代码调用 AfterMatchSkipStrategy.skipPastLastEvent()。找到 a1 开始的匹配（a1 a2 a3 b）之后，直接跳过所有 a1 直到 a3
+        // 开头的匹配，相当于把这些子匹配都跳过了。最终得到（a1 a2 a3 b），这是最为精简的跳过策略。
 
         PatternStream<String> patternStream = CEP.pattern(ds, pattern).inProcessingTime();
 
