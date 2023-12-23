@@ -37,7 +37,9 @@ import java.util.Map;
  * Note that when using {@code SKIP_TO_FIRST} and {@code SKIP_TO_LAST} skip strategy, a valid
  * {@code PatternName} should also be specified.
  *
- * @see <a href="https://nightlies.apache.org/flink/flink-docs-master/docs/libs/cep/#after-match-skip-strategy">after-match-skip-strategy</a>
+ * @see <a href="https://blog.csdn.net/weixin_45417821/article/details/124754226">introduction for after-match-skip-strategy</a>
+ * @see <a href="https://nightlies.apache.org/flink/flink-docs-master/docs/libs/cep/#after-match-skip-strategy">
+ *     after-match-skip-strategy</a>
  */
 public class AfterMatchSkipStrategyDemo {
     public static void main(String[] args) throws Exception {
@@ -53,11 +55,11 @@ public class AfterMatchSkipStrategyDemo {
         // Test case: a1 a2 a3 b
         // Output:
         // {start=[a1, a2, a3], middle=[b]}
-        //{start=[a1, a2], middle=[b]}
-        //{start=[a1], middle=[b]}
-        //{start=[a2, a3], middle=[b]}
-        //{start=[a2], middle=[b]}
-        //{start=[a3], middle=[b]}
+        // {start=[a1, a2], middle=[b]}
+        // {start=[a1], middle=[b]}
+        // {start=[a2, a3], middle=[b]}
+        // {start=[a2], middle=[b]}
+        // {start=[a3], middle=[b]}
         // noSkipStrategy is the default strategy
         // 不跳过（NO_SKIP）
         // 代码调用 AfterMatchSkipStrategy.noSkip()。这是默认策略，所有可能的匹配都会输出。所以这里会输出完整的 6 个匹配。
@@ -73,6 +75,8 @@ public class AfterMatchSkipStrategyDemo {
         // {start=[a1, a2, a3], middle=[b]}
         // {start=[a2, a3], middle=[b]}
         // {start=[a3], middle=[b]}
+        // 应该检测到 6 个匹配结果：（a1 a2 a3 b），（a1 a2 b），（a1 b），（a2 a3 b），（a2 b），（a3 b）。如果在初始模式的量词.
+        // oneOrMore()后加上.greedy()定义为贪心匹配，那么结果就是：（a1 a2 a3 b），（a2 a3 b），（a3 b），每个事件作为开头只会出现一次。
         pattern = Pattern.<String>begin("start", noSkipStrategy)
                 .where(SimpleCondition.of(value -> value.startsWith("a")))
                 .oneOrMore()
@@ -116,7 +120,7 @@ public class AfterMatchSkipStrategyDemo {
         // {start=[a1, a2], middle=[b]}
         // {start=[a1], middle=[b]}
         // 跳至第一个（SKIP_TO_FIRST[a]）
-        // 代码调用 AfterMatchSkipStrategy.skipToFirst(“a”)，这里传入一个参数，指明跳至哪个模式的第一个匹配事件。找到 a1 开始的匹配
+        // 代码调用 AfterMatchSkipStrategy.skipToFirst(“start”)，这里传入一个参数，指明跳至哪个模式的第一个匹配事件。找到a1开始的匹配
         // （a1 a2 a3 b）后，跳到以最开始一个 a（也就是 a1）为开始的匹配，相当于只留下 a1 开始的匹配。最终得到（a1 a2 a3 b），
         // （a1 a2 b），（a1 b）。
         pattern = Pattern.<String>begin("start", skipToFirstStrategy)
@@ -131,8 +135,14 @@ public class AfterMatchSkipStrategyDemo {
         // Output: {start=[a1, a2, a3], middle=[b]}
         // {start=[a3], middle=[b]}
         // 跳至最后一个（SKIP_TO_LAST[a]）
-        // 代码调用 AfterMatchSkipStrategy.skipToLast(“a”)，同样传入一个参数，指明跳至哪个模式的最后一个匹配事件。找到 a1 开始的匹配
+        // 代码调用 AfterMatchSkipStrategy.skipToLast(“start”)，同样传入一个参数，指明跳至哪个模式的最后一个匹配事件。找到a1开始的匹配
         // （a1 a2 a3 b）后，跳过所有 a1、a2 开始的匹配，跳到以最后一个 a（也就是 a3）为开始的匹配。最终得到（a1 a2 a3 b），（a3 b）。
+        // 1. The pattern will initially match "a1", "a2", and "a3" as part of the start condition, followed by "b" for
+        // the middle condition, resulting in the first match: ["a1", "a2", "a3", "b"].
+        // 2. With the AfterMatchSkipStrategy.skipToLast("start"), the next match attempt will start after the last
+        // element that satisfied the start condition in the previous match, which is "a3".
+        // 3. The second match attempt will then immediately match "a3" as the start condition and "b" as the middle
+        // condition, giving the second match: ["a3", "b"]
         pattern = Pattern.<String>begin("start", skipToLastStrategy)
                 .where(SimpleCondition.of(value -> value.startsWith("a")))
                 .oneOrMore()
