@@ -1,6 +1,8 @@
 package com.ddsr.cep;
 
 import org.apache.flink.cep.CEP;
+import org.apache.flink.cep.PatternFlatSelectFunction;
+import org.apache.flink.cep.PatternFlatTimeoutFunction;
 import org.apache.flink.cep.PatternStream;
 import org.apache.flink.cep.functions.PatternProcessFunction;
 import org.apache.flink.cep.functions.TimedOutPartialMatchHandler;
@@ -98,7 +100,38 @@ public class HandleTimeOutPartialPatterns {
         PatternStream<Event> patternStream = CEP.pattern(eventStream.keyBy(Event::getName), pattern).inProcessingTime();
 
         // Process the detected patterns
-        SingleOutputStreamOperator<String> mainDataStream = patternStream.process(new MyPatternProcessFunction());
+//        SingleOutputStreamOperator<String> mainDataStream = patternStream.process(new MyPatternProcessFunction());
+
+
+        // Use flatSelect instead of process
+        SingleOutputStreamOperator<String> mainDataStream = patternStream.flatSelect(
+                timedOutPartialMatchTag,
+                // can not use lambada expression
+                new PatternFlatTimeoutFunction<Event, String>() {
+                    @Override
+                    public void timeout(Map<String, List<Event>> pattern, long timeoutTimestamp, Collector<String> out) {
+                        // Handle timed out partial matches here
+                        String matchStr = pattern.values().stream()
+                                .flatMap(List::stream)
+                                .map(Event::getName)
+                                .collect(Collectors.joining(", "));
+                        out.collect("Timed out partial match: " + matchStr);
+                    }
+                },
+                // can not use lambada expression
+                new PatternFlatSelectFunction<Event, String>() {
+                    @Override
+                    public void flatSelect(Map<String, List<Event>> pattern, Collector<String> out) {
+                        // Handle complete matches here
+                        String matchStr = pattern.values().stream()
+                                .flatMap(List::stream)
+                                .map(Event::getName)
+                                .collect(Collectors.joining(", "));
+                        out.collect("Complete match: " + matchStr);
+                    }
+                }
+        );
+
 
         mainDataStream.print("main==>");
 
