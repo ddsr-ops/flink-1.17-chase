@@ -21,6 +21,21 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
+ *
+ * Whenever a pattern has a window length attached via the {@code within} keyword,
+ * it is possible that partial event sequences are discarded because they exceed the
+ * window length. To act upon a timed out partial match, one can use the
+ * {@link TimedOutPartialMatchHandler} interface.
+ *
+ * <p>The interface is supposed to be used in a mixin style. This means you can
+ * additionally implement this interface with your {@link PatternProcessFunction}.
+ * The {@link TimedOutPartialMatchHandler} provides the additional
+ * {@code processTimedOutMatch} method which will be called for every timed out
+ * partial match.
+ *
+ * @see TimedOutPartialMatchHandler#processTimedOutMatch
+ *
+ *
  * @author ddsr, created it at 2023/12/23 21:01
  */
 public class HandleTimeOutPartialPatterns {

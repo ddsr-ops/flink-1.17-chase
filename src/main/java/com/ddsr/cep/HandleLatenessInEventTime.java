@@ -3,9 +3,13 @@ package com.ddsr.cep;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.cep.CEP;
 import org.apache.flink.cep.PatternStream;
+import org.apache.flink.cep.pattern.Pattern;
+import org.apache.flink.cep.pattern.conditions.SimpleCondition;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
+import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.util.OutputTag;
 
 import java.time.Duration;
@@ -73,19 +77,34 @@ public class HandleLatenessInEventTime {
         // Assign the watermark strategy to the input
         input.assignTimestampsAndWatermarks(watermarkStrategy);
 
-
+        // Define a pattern that matches if the consecutive two temperatures are greater than 20
+        Pattern<Event, Event> pattern = Pattern.<Event>begin("start")
+                .where(new SimpleCondition<Event>() {
+                    @Override
+                    public boolean filter(Event value) {
+                        return value.temperature > 20;
+                    }
+                })
+                .next("end")
+                .where(new SimpleCondition<Event>() {
+                    @Override
+                    public boolean filter(Event value) {
+                        return value.temperature > 20;
+                    }
+                })
+                .within(Time.seconds(5));
 
         PatternStream<Event> patternStream = CEP.pattern(input, pattern);
 
-        OutputTag<String> lateDataOutputTag = new OutputTag<String>("late-data"){};
+        OutputTag<Event> lateDataOutputTag = new OutputTag<Event>("late-data"){};
 
-        SingleOutputStreamOperator<ComplexEvent> result = patternStream
+        SingleOutputStreamOperator<Event> result = patternStream
                 .sideOutputLateData(lateDataOutputTag)
                 .select(
                         new PatternSelectFunction<Event, ComplexEvent>() {...}
                 );
 
-        DataStream<String> lateData = result.getSideOutput(lateDataOutputTag);
+        DataStream<Event> lateData = result.getSideOutput(lateDataOutputTag);
 
     }
 }
