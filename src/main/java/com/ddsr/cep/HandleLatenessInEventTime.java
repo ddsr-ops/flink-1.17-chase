@@ -48,10 +48,10 @@ public class HandleLatenessInEventTime {
 
     private static class Event {
         // timestamp as event time
-        long ts;
-        double temperature;
+        Long ts;
+        Double temperature;
 
-        public Event(long l, double v) {
+        public Event(Long l, Double v) {
             ts = l;
             temperature = v;
         }
