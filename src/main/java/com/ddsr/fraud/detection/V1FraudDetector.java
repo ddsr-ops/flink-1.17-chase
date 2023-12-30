@@ -1,6 +1,5 @@
 package com.ddsr.fraud.detection;
 
-import javafx.scene.control.Alert;
 import org.apache.flink.api.common.state.ValueState;
 import org.apache.flink.api.common.state.ValueStateDescriptor;
 import org.apache.flink.api.common.typeinfo.Types;
