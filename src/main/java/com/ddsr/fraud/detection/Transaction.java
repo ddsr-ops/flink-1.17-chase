@@ -1,8 +1,5 @@
 package com.ddsr.fraud.detection;
 
-/**
- * @author ddsr, created it at 2023/12/30 19:38
- */
 
 import java.util.Objects;
 
