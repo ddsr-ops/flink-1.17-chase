@@ -1,4 +1,4 @@
-package com.ddsr.aggregate;
+package com.ddsr.keyby;
 
 import com.ddsr.bean.WaterSensor;
 import org.apache.flink.api.java.functions.KeySelector;
@@ -28,6 +28,12 @@ public class KeyByDemo {
              keyby 对数据分组， 保证相同key的数据， 在同一个分区；
              分区：一个子任务可以理解为一个分区， 一个分组内可存在多个分组key
              一个分区内， 可有多组(key)；一个key
+
+           Every keyBy causes a network shuffle that repartitions the stream. In general this is pretty expensive,
+           since it involves network communication along with serialization and deserialization.
+
+           The keys must be produced in a deterministic way, because they are recomputed whenever they are needed,
+            rather than being attached to the stream records.
          */
 
         // 方式一：使用Lambda表达式
