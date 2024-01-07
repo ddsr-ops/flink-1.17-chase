@@ -11,24 +11,33 @@ import org.apache.flink.streaming.api.windowing.time.Time;
  */
 public class WindowFollowWindowDemo {
     public static void main(String[] args) throws Exception {
+
+        // Set up the execution environment
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+
+        // Create a stream of sensor readings from a socket source
         DataStream<SensorReading> sensorReadings = env.socketTextStream("192.168.20.126", 7777)
                 .map(s -> new SensorReading(s.split(",")[0],
                         Long.parseLong(s.split(",")[1]),
-                        Double.parseDouble(s.split(",")[2]))); // source of SensorReading events
+                        Double.parseDouble(s.split(",")[2])));
 
+        // Compute minute averages of sensor readings
         DataStream<SensorReading> minuteAverages = sensorReadings
                 .keyBy(SensorReading::getSensorId)
                 .timeWindow(Time.minutes(1))
                 .aggregate(new AverageAggregate());
 
+        // Compute hourly averages of sensor readings
         DataStream<SensorReading> hourlyAverages = minuteAverages
                 .keyBy(SensorReading::getSensorId)
                 .timeWindow(Time.hours(1))
                 .aggregate(new AverageAggregate());
 
-        env.execute("Multi-Level Aggregation Example");
+        // Print the hourly averages
+        hourlyAverages.print();
 
+        // Execute the job
+        env.execute("Multi-Level Aggregation Example");
     }
 
     public static class AverageAggregate implements AggregateFunction<SensorReading, Tuple3<String, Double, Integer>, SensorReading> {
