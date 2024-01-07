@@ -51,7 +51,7 @@ public class ConnectKeyByDemo {
                     @Override
                     public void processElement1(Tuple2<Integer, String> value, Context ctx, Collector<String> out) throws Exception {
                         Integer id = value.f0;
-                        // TODO 1.来过的s1数据，都存起来
+                        //  1.来过的s1数据，都存起来
                         if (!s1Cache.containsKey(id)) {
                             // 1.1 第一条数据，初始化 value的list，放入 hashmap
                             List<Tuple2<Integer, String>> s1Values = new ArrayList<>();
@@ -62,7 +62,7 @@ public class ConnectKeyByDemo {
                             s1Cache.get(id).add(value);
                         }
 
-                        //TODO 2.根据id，查找s2的数据，只输出 匹配上 的数据
+                        // 2.根据id，查找s2的数据，只输出 匹配上 的数据
                         if (s2Cache.containsKey(id)) {
                             for (Tuple3<Integer, String, Integer> s2Element : s2Cache.get(id)) {
                                 out.collect("s1:" + value + "<--------->s2:" + s2Element);
@@ -73,7 +73,7 @@ public class ConnectKeyByDemo {
                     @Override
                     public void processElement2(Tuple3<Integer, String, Integer> value, Context ctx, Collector<String> out) throws Exception {
                         Integer id = value.f0;
-                        // TODO 1.来过的s2数据，都存起来
+                        //  1.来过的s2数据，都存起来
                         if (!s2Cache.containsKey(id)) {
                             // 1.1 第一条数据，初始化 value的list，放入 hashmap
                             List<Tuple3<Integer, String, Integer>> s2Values = new ArrayList<>();
@@ -84,7 +84,7 @@ public class ConnectKeyByDemo {
                             s2Cache.get(id).add(value);
                         }
 
-                        //TODO 2.根据id，查找s1的数据，只输出 匹配上 的数据
+                        // 2.根据id，查找s1的数据，只输出 匹配上 的数据
                         if (s1Cache.containsKey(id)) {
                             for (Tuple2<Integer, String> s1Element : s1Cache.get(id)) {
                                 out.collect("s1:" + s1Element + "<--------->s2:" + value);
