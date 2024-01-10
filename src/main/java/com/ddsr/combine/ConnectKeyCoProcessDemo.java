@@ -9,6 +9,8 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.co.KeyedCoProcessFunction;
 import org.apache.flink.util.Collector;
 
+import java.io.IOException;
+
 /**
  * @author ddsr, created it at 2024/1/7 22:30
  */
@@ -19,9 +21,15 @@ public class ConnectKeyCoProcessDemo {
 
         // Sources for TaxiRide and TaxiFare would be created here
         // This is just a placeholder for the source of TaxiRide events
-        DataStream<TaxiRide> rides = env.addSource(/* Your TaxiRide source, e.g., from Kafka */);
+        DataStream<TaxiRide> rides = env.socketTextStream("192.168.20.126", 7777)
+                .map(value -> new TaxiRide(Long.parseLong(value.split(",")[0]),
+                        Long.parseLong(value.split(",")[1])));
+
         // This is just a placeholder for the source of TaxiFare events
-        DataStream<TaxiFare> fares = env.addSource(/* Your TaxiFare source, e.g., from Kafka */);
+        DataStream<TaxiFare> fares = env.socketTextStream("192.168.20.126", 8888)
+                .map(value -> new TaxiFare(Long.parseLong(value.split(",")[0]),
+                        Long.parseLong(value.split(",")[1]),
+                        Float.parseFloat(value.split(",")[2])));
 
         // Join the TaxiRide and TaxiFare streams
         DataStream<EnrichedRide> enrichedRides = rides
@@ -84,7 +92,7 @@ public class ConnectKeyCoProcessDemo {
         }
 
         @Override
-        public void onTimer(long timestamp, OnTimerContext context, Collector<EnrichedRide> out) {
+        public void onTimer(long timestamp, OnTimerContext context, Collector<EnrichedRide> out) throws IOException {
             // Clear any stale state that hasn't been matched and outputted
             if (rideState.value() != null) {
                 rideState.clear();
@@ -96,9 +104,14 @@ public class ConnectKeyCoProcessDemo {
     }
 
     // TaxiRide represents information about a taxi ride event.
-    public class TaxiRide {
-        private long rideId;
-        private long eventTime; // Event time of the ride
+    public static class TaxiRide {
+        private final long rideId;
+        private final long eventTime; // Event time of the ride
+
+        public TaxiRide(long rideId, long eventTime) {
+            this.rideId = rideId;
+            this.eventTime = eventTime;
+        }
 
         // Other fields, constructors, getters and setters would be here.
 
@@ -114,10 +127,16 @@ public class ConnectKeyCoProcessDemo {
     }
 
     // TaxiFare represents information about a taxi fare event.
-    public class TaxiFare {
-        private long rideId;
-        private long eventTime; // Event time when the fare was recorded
-        private float totalFare; // Total fare of the ride
+    public static class TaxiFare {
+        private final long rideId;
+        private final long eventTime; // Event time when the fare was recorded
+        private final float totalFare; // Total fare of the ride
+
+        public TaxiFare(long rideId, long eventTime, float totalFare) {
+            this.rideId = rideId;
+            this.eventTime = eventTime;
+            this.totalFare = totalFare;
+        }
 
         // Other fields, constructors, getters and setters would be here.
 
@@ -138,8 +157,8 @@ public class ConnectKeyCoProcessDemo {
 
     // EnrichedRide is a combined entity of TaxiRide and TaxiFare.
     public static class EnrichedRide {
-        private TaxiRide ride;
-        private TaxiFare fare;
+        private final TaxiRide ride;
+        private final TaxiFare fare;
 
         // Constructor to combine TaxiRide and TaxiFare into an EnrichedRide.
         public EnrichedRide(TaxiRide ride, TaxiFare fare) {
