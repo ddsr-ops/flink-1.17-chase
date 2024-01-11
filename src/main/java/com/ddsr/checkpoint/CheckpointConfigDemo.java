@@ -26,6 +26,9 @@ public class CheckpointConfigDemo {
 
         // 检查点配置
         // 1、启用检查点: 默认是barrier对齐的，周期为5s, 精准一次
+        // Barrier alignment is only needed for providing exactly once guarantees. If you don’t need this, you can gain
+        // some performance by configuring Flink to use CheckpointingMode.AT_LEAST_ONCE, which has the effect of
+        // disabling barrier alignment.
         env.enableCheckpointing(5000, CheckpointingMode.EXACTLY_ONCE);
         CheckpointConfig checkpointConfig = env.getCheckpointConfig();
         // 2、指定检查点的存储位置
