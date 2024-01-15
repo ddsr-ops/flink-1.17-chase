@@ -29,6 +29,13 @@ public class CheckpointConfigDemo {
         // Barrier alignment is only needed for providing exactly once guarantees. If you don’t need this, you can gain
         // some performance by configuring Flink to use CheckpointingMode.AT_LEAST_ONCE, which has the effect of
         // disabling barrier alignment.
+        // Exactly Once End-to-end #
+
+        //To achieve exactly once end-to-end, so that every event from the sources affects the sinks exactly once, the
+        // following must be true:
+        //
+        //1. your sources must be replayable, and
+        //2. your sinks must be transactional (or idempotent)
         env.enableCheckpointing(5000, CheckpointingMode.EXACTLY_ONCE);
         CheckpointConfig checkpointConfig = env.getCheckpointConfig();
         // 2、指定检查点的存储位置
