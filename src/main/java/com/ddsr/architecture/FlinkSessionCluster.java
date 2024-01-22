@@ -17,6 +17,9 @@ package com.ddsr.architecture;
  * and a high startup time would negatively impact the end-to-end user experience — as is the case with interactive
  * analysis of short queries, where it is desirable that jobs can quickly perform computations using existing resources.
  *
+ * <p>
+ * <i>Formerly, a Flink Session Cluster was also known as a Flink Cluster in session mode.</i>
+ *
  * @author ddsr, created it at 2024/1/19 22:30
  */
 public class FlinkSessionCluster {
