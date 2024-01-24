@@ -1,5 +1,7 @@
 package com.ddsr.source;
 
+import org.apache.flink.api.common.JobExecutionResult;
+import org.apache.flink.core.execution.JobClient;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
 /**
@@ -25,6 +27,18 @@ public class CollectionDemo {
         env.fromElements("3", "3", "5", "5")
                 .printToErr();
 
-        env.execute();
+        // This is synchronous action
+//        env.execute();
+
+
+        // If you don’t want to wait for the job to finish, you can trigger asynchronous job execution by calling
+        // executeAsync() on the StreamExecutionEnvironment. It will return a JobClient with which you can
+        // communicate with the job you just submitted. For instance, here is how to implement the semantics of
+        // execute() by using executeAsync().
+        final JobClient jobClient = env.executeAsync();
+
+        final JobExecutionResult jobExecutionResult = jobClient.getJobExecutionResult().get();
+
+        System.out.println("jobExecutionResult = " + jobExecutionResult);
     }
 }
