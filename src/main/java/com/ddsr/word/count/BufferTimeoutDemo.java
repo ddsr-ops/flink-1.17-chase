@@ -22,6 +22,10 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
  */
 public class BufferTimeoutDemo {
     public static void main(String[] args) throws Exception {
+        // A LocalStreamEnvironment starts a Flink system within the same JVM process it was created in. If you start
+        // the LocalEnvironment from an IDE, you can set breakpoints in your code and easily debug your program.
+
+        // That means that local environments should be recommended to be used in IDEs for debugging.
         LocalStreamEnvironment env = StreamExecutionEnvironment.createLocalEnvironment();
         env.setParallelism(1);
         int timeoutMillis = 1000;
