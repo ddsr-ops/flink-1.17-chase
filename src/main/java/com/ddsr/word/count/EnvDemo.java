@@ -1,29 +1,30 @@
-package com.ddsr.wc;
+package com.ddsr.word.count;
 
+import org.apache.flink.api.common.RuntimeExecutionMode;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.configuration.Configuration;
+import org.apache.flink.configuration.RestOptions;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.util.Collector;
 
-import java.util.stream.Stream;
-
 /**
- * DataStream API read txt file (bounded stream)
- *
- * What about unbounded stream , such as socket stream, kafka stream(not specify end offset).
- *
- * @author ddsr, created it at 2023/8/5 21:49
+ * @author ddsr, created it at 2023/8/12 22:24
  */
-public class WordCountStream {
+public class EnvDemo {
     public static void main(String[] args) throws Exception {
-        // StreamExecutionEnvironment, automatically resolve running env: local or remote
-//        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        Configuration configuration = new Configuration();
+        // rest web ui port
+        configuration.set(RestOptions.BIND_PORT, "8082");
+        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment(configuration);
 
-        // If you use IDEA to develop flink programs, use this env to launch WEB UI
-        // Prerequisites: flink-runtime-web dependency included
-        // Default parallelism is thread number of PC if parallelism is not specified.
-        StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(new Configuration());
+        // Change runtime mode without modify operation api
+        //        env.setRuntimeMode(RuntimeExecutionMode.STREAMING);
+        // Commonly, Not set runtime mode in codes, but use command-line option to set this via -Dexecution.runtime-mode=BATCH
+        env.setRuntimeMode(RuntimeExecutionMode.BATCH);
+
+        // Change runtime mode automatically
+        env.setRuntimeMode(RuntimeExecutionMode.AUTOMATIC);
 
         env.readTextFile("input/word.txt")
                 .flatMap(new FlatMapFunction<String, Tuple2<String,Integer>>() {

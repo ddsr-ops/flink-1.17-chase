@@ -1,4 +1,4 @@
-package com.ddsr.wc;
+package com.ddsr.word.count;
 
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.java.tuple.Tuple2;
