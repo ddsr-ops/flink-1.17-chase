@@ -19,8 +19,11 @@ public class EnvDemo {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment(configuration);
 
         // Change runtime mode without modify operation api
+        // STREAMING execution mode, can be used for both bounded and unbounded jobs.
         //        env.setRuntimeMode(RuntimeExecutionMode.STREAMING);
+
         // Commonly, Not set runtime mode in codes, but use command-line option to set this via -Dexecution.runtime-mode=BATCH
+        // The BATCH execution mode can only be used for Jobs/Flink Programs that are bounded.
         env.setRuntimeMode(RuntimeExecutionMode.BATCH);
 
         // Change runtime mode automatically
