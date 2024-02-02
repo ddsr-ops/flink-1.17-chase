@@ -12,6 +12,14 @@ import org.apache.flink.streaming.api.checkpoint.CheckpointedFunction;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
 /**
+ * State Backends / State #
+ * In STREAMING mode, Flink uses a StateBackend to control how state is stored and how checkpointing works.
+ * <p></p>
+ * In BATCH mode, the configured state backend is ignored. Instead, the input of a keyed operation is grouped by key
+ * (using sorting) and then we process all records of a key in turn. This allows keeping only the state of only one
+ * key at the same time. State for a given key will be discarded when moving on to the next key.
+ *
+ * <p></p>
  * Backends: hashmap & rocksdb
  *
  * @author ddsr, created it at 2023/9/30 17:42
