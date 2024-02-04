@@ -16,6 +16,13 @@ import org.apache.flink.util.Collector;
 import java.time.Duration;
 
 /**
+ * When it comes to supporting event time, Flink’s streaming runtime builds on the pessimistic assumption that events
+ * may come out-of-order, i.e. an event with timestamp t may come after an event with timestamp t+1. Because of this,
+ * the system can never be sure that no more elements with timestamp t < T for a given timestamp T can come in the
+ * future. To amortise the impact of this out-of-orderness on the final result while making the system practical, in
+ * STREAMING mode, Flink uses a heuristic called Watermarks. A watermark with timestamp T signals that no element
+ * with timestamp t < T will follow.
+ * <p>
  * Allow lateness
  *
  * @author ddsr, created it at 2023/8/26 11:38
