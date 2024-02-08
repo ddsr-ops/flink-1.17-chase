@@ -27,6 +27,11 @@ import java.time.Duration;
  * 始终无法触发窗口关闭和计算（没设置.withIdleness(Duration.ofSeconds(5))）
  *
  *
+ * If one of the input splits/partitions/shards does not carry events for a while this means that the
+ * WatermarkGenerator also does not get any new information on which to base a watermark. We call this an idle input
+ * or an idle source. This is a problem because it can happen that some of your partitions do still carry events. In
+ * that case, the watermark will be held back, because it is computed as the minimum over all the different parallel
+ * watermarks.
  *
  * @author ddsr, created it at 2023/8/26 21:10
  */
