@@ -1,5 +1,10 @@
 package com.ddsr.time;
 
+import org.apache.flink.streaming.api.TimeCharacteristic;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+
+import java.util.Arrays;
+
 /**
  * Processing Time is the wall-clock time on the machine that a record is processed, at the specific instance that the
  * record is being processed. Based on this definition, we see that the results of a computation that is based on
@@ -22,5 +27,14 @@ package com.ddsr.time;
  * @author ddsr, created it at 2024/2/4 22:44
  */
 public class ProcessTimeDemo {
-
+    public static void main(String[] args) throws Exception {
+        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        env.setParallelism(1);
+        // Take the process time as time characteristics
+        env.setStreamTimeCharacteristic(TimeCharacteristic.ProcessingTime);
+        env.fromCollection(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
+                .print();
+        env.execute();
+    }
 }
+
