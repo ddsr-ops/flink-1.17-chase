@@ -24,12 +24,13 @@ import java.time.Duration;
  * sources/splits/shards/partitions increase their watermarks too far ahead of the rest. You can enable alignment for
  * every source separately
  *
- * todo: https://github.com/1996fanrui/fanrui-learning/blob/3d436c314a876801e53cdef99149705846200330/module-flink/src/main/java/com/dream/flink/kafka/alignment/KafkaAlignmentDemo.java#L44
+ *
  * @author ddsr, created it at 2024/2/21 21:25
  * @see <a
  * href="https://nightlies.apache.org/flink/flink-docs-release-1
  * .18/docs/dev/datastream/event-time/generating_watermarks/#watermark-alignment">Watermark
  * Alignment</a>
+ * @see KafkaAlignmentDemo
  */
 public class WatermarkWithWatermarkAlignment {
     public static void main(String[] args) throws Exception {
