@@ -1,20 +1,27 @@
 package com.ddsr.watermark;
 
+import org.apache.flink.api.common.eventtime.Watermark;
+import org.apache.flink.api.common.eventtime.WatermarkGenerator;
 import org.apache.flink.api.common.eventtime.WatermarkOutput;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.connector.kafka.source.KafkaSource;
 import org.apache.flink.connector.kafka.source.enumerator.initializer.OffsetsInitializer;
+import org.apache.flink.formats.json.JsonDeserializationSchema;
 import org.apache.flink.runtime.state.FunctionInitializationContext;
 import org.apache.flink.runtime.state.FunctionSnapshotContext;
 import org.apache.flink.streaming.api.checkpoint.CheckpointedFunction;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
+import org.apache.flink.util.Preconditions;
 
 import java.time.Duration;
 
 /**
  * @author ddsr, created it at 2024/2/23 22:52
+ * @see <a
+ * href="https://github.com/1996fanrui/fanrui-learning/blob/3d436c314a876801e53cdef99149705846200330/module-flink/src
+ * /main/java/com/dream/flink/kafka/alignment/KafkaAlignmentDemo.java#L19">KafkaAlignmentDemo</a>
  */
 public class KafkaAlignmentDemo {
     public static final String SLOW_SOURCE_NAME = "SlowNumberSequenceSource";
@@ -26,6 +33,7 @@ public class KafkaAlignmentDemo {
         Configuration conf = new Configuration();
         conf.setString("state.checkpoints.dir", "file:///tmp/flinkjob");
 //        conf.setString("execution.savepoint.path", "file:///tmp/flinkjob/8cd55f071073f34531856eb4420a5cd1/chk-24");
+
 
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment(conf);
         env.setParallelism(2);
@@ -83,7 +91,7 @@ public class KafkaAlignmentDemo {
         private long firstCheckpointId = DEFAULT_CHECKPOINT_ID;
 
         @Override
-        public void invoke(T value, Context context) throws Exception {
+        public void invoke(T value, Context context) {
             System.out.println(value);
         }
 
