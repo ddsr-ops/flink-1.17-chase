@@ -85,6 +85,7 @@ public class WatermarkPeriodicCustomDemo {
 
         // invoke it periodically, emit watermark
         // the period is controlled by setAutoWatermarkInterval method
+        // A new watermark will be emitted if the returned watermark is non-null and larger than the previous watermark.
         @Override
         public void onPeriodicEmit(WatermarkOutput output) {
             Watermark watermark = new Watermark(maxTs - outOfOrderness - 1);
