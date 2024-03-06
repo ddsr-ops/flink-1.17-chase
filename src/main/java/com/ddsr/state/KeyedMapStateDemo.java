@@ -16,6 +16,13 @@ import java.time.Duration;
 import java.util.Map;
 
 /**
+ * MapState keeps a list of mappings. You can put key-value pairs into the state and retrieve an Iterable over all
+ * currently
+ * stored mappings. Mappings are added using put(UK, UV) or putAll(Map<UK, UV>). The value associated with a user key
+ * can be retrieved using get(UK). The iterable views for mappings, keys and values can be retrieved using entries(),
+ * keys() and values() respectively. You can also use isEmpty() to check whether this map contains any key-value
+ * mappings.
+ * <p>
  * Compute times of vc of every sensor
  *
  * @author ddsr, created it at 2023/9/29 17:46
