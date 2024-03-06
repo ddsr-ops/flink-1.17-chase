@@ -15,6 +15,10 @@ import org.apache.flink.util.Collector;
 import java.time.Duration;
 
 /**
+ * This keeps a value that can be updated and retrieved (scoped to key of the input element as mentioned above, so there
+ * will possibly be one value for each key that the operation sees). The value can be set using update(T) and retrieved
+ * using T value().
+ *
  * @author ddsr, created it at 2023/9/26 22:37
  */
 public class KeyedValueStateDemo {
