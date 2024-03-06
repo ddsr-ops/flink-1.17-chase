@@ -16,6 +16,9 @@ import org.apache.flink.util.Collector;
 import java.time.Duration;
 
 /**
+ * ReducingState keeps a single value that represents the aggregation of all values added to the state. The interface is
+ * similar to ListState but elements added using add(T) are reduced to an aggregate using a specified ReduceFunction.
+ * <p>
  * Compute the sum of vc of every sensor
  * The type of reducing states is the same as the type of input data
  *
