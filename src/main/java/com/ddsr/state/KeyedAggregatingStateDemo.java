@@ -17,6 +17,13 @@ import org.apache.flink.util.Collector;
 import java.time.Duration;
 
 /**
+ *
+ * AggregatingState keeps a single value that represents the aggregation of all values added to the state. Contrary
+ * to ReducingState, the aggregate type may be different from the type of elements that are added to the state. The
+ * interface is the same as for ListState but elements added using add(IN) are aggregated using a specified
+ * AggregateFunction.
+ *
+ * <p></p>
  * Compute the average of vc of every sensor
  *
  * The largest difference is types of IN, ACC, OUT can be different
