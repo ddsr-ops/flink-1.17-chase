@@ -18,6 +18,11 @@ import java.util.Collections;
 import java.util.List;
 
 /**
+ * ListState keeps a list of elements. You can append elements and retrieve an Iterable over all currently stored
+ * elements.
+ * Elements are added using add(T) or addAll(List<T>), the Iterable can be retrieved using Iterable<T> get(). You can
+ * also override the existing list with update(List<T>)
+ * <p>
  * Obtain top 3 vc of every sensor
  *
  * @author ddsr, created it at 2023/9/28 22:41
