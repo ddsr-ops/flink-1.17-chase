@@ -69,6 +69,10 @@ public class StateTTLDemo {
 //                                        .setUpdateType(StateTtlConfig.UpdateType.OnCreateAndWrite) // 状态 创建和写入（更新） 更新 过期时间
                                         .setUpdateType(StateTtlConfig.UpdateType.OnReadAndWrite) // 状态 读取、创建和写入（更新） 更新 过期时间
                                         .setStateVisibility(StateTtlConfig.StateVisibility.NeverReturnExpired) // 不返回过期的状态值， 一般来说使用这个选项值
+//                                        .disableCleanupInBackground()
+                                        // By default, expired values are explicitly removed on read, such as
+                                        // ValueState#value, and periodically garbage collected in the background if
+                                        // supported by the configured state backend. Background cleanup can be disabled
                                         .build();
 
                                 //  2.状态描述器 启用 TTL
