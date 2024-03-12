@@ -75,7 +75,22 @@ public class StateTTLDemo {
 //                                        .disableCleanupInBackground()
                                         // Activate the cleanup at the moment of taking the full state snapshot which
                                         // will reduce its size
-                                        .cleanupFullSnapshot()
+                                        // This option is not applicable for the incremental checkpointing in the RocksDB
+                                        // state backend
+//                                        .cleanupFullSnapshot()
+                                        // Another option is to trigger cleanup of some state entries incrementally.
+                                        // The trigger can be a callback from each state access or/and each record
+                                        // processing. If this cleanup strategy is active for certain state, The
+                                        // storage backend keeps a lazy global iterator for this state over all its
+                                        // entries. Every time incremental cleanup is triggered, the iterator is
+                                        // advanced. The traversed state entries are checked and expired ones are
+                                        // cleaned up.
+                                        // This strategy has two parameters. The first one is number of checked state
+                                        // entries per each cleanup triggering. It is always triggered per each state
+                                        // access. The second parameter defines whether to trigger cleanup
+                                        // additionally per each record processing. The default background cleanup
+                                        // for heap backend checks 5 entries without cleanup per record processing.
+//                                        .cleanupIncrementally(10, true)
                                         .build();
 
                                 //  2.状态描述器 启用 TTL
