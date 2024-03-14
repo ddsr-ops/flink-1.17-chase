@@ -78,6 +78,7 @@ public class StateTTLDemo {
                                         // This option is not applicable for the incremental checkpointing in the RocksDB
                                         // state backend
 //                                        .cleanupFullSnapshot()
+
                                         // Another option is to trigger cleanup of some state entries incrementally.
                                         // The trigger can be a callback from each state access or/and each record
                                         // processing. If this cleanup strategy is active for certain state, The
@@ -91,6 +92,22 @@ public class StateTTLDemo {
                                         // additionally per each record processing. The default background cleanup
                                         // for heap backend checks 5 entries without cleanup per record processing.
 //                                        .cleanupIncrementally(10, true)
+
+                                        // If the RocksDB state backend is used, a Flink specific compaction filter
+                                        // will be called for the background cleanup. RocksDB periodically runs
+                                        // asynchronous compactions to merge state updates and reduce storage. Flink
+                                        // compaction filter checks expiration timestamp of state entries with TTL
+                                        // and excludes expired values.
+                                        // Calling of TTL filter during compaction slows it down. The TTL filter has
+                                        // to parse timestamp of last access and check its expiration for every
+                                        // stored state entry per key which is being compacted. In case of collection
+                                        // state type (list or map) the check is also invoked per stored element.
+                                        // If this feature is used with a list state which has elements with
+                                        // non-fixed byte length, the native TTL filter has to call additionally a
+                                        // Flink java type serializer of the element over JNI per each state entry
+                                        // where at least the first element has expired to determine the offset of
+                                        // the next unexpired element.
+//                                        .cleanupInRocksdbCompactFilter(1000)
                                         .build();
 
                                 //  2.状态描述器 启用 TTL
