@@ -35,6 +35,8 @@ public class WindowProcessDemo {
 
         // All window process function (全窗口函数)
         // Begin to process them until all elements in the window arrive(meaning the window ends), only cache them before the window ends
+        // All of the events assigned to the window have to be buffered in keyed Flink state until the window is
+        // triggered. This is potentially quite expensive.
         sensorWS
                 .process(new ProcessWindowFunction<WaterSensor, String, String, TimeWindow>() {
                     /**
