@@ -24,7 +24,7 @@ public class KafkaSinkDemo {
         SingleOutputStreamOperator<String> sensorDS = env
                 .socketTextStream("ora11g", 7777);
 
-        /**
+        /*
          * Kafka Sink:
          * 注意：如果要使用 精准一次 写入Kafka，需要满足以下条件，缺一不可
          * 1、开启checkpoint
@@ -53,7 +53,7 @@ public class KafkaSinkDemo {
 
         sensorDS.sinkTo(kafkaSink);
 
-        /**
+        /*
          * kafka-console-consumer --bootstrap-server ora11g:9092 --topic ws
          */
 
