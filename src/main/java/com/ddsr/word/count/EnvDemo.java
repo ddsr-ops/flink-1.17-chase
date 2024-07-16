@@ -12,7 +12,7 @@ import org.apache.flink.util.Collector;
  * @author ddsr, created it at 2023/8/12 22:24
  */
 public class EnvDemo {
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings({"deprecation", "Convert2Lambda"})
     public static void main(String[] args) throws Exception {
         Configuration configuration = new Configuration();
         // rest web ui port
