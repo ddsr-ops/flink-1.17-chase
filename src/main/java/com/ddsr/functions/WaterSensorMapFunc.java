@@ -11,6 +11,12 @@ public class WaterSensorMapFunc implements MapFunction<String, WaterSensor> {
     @Override
     public WaterSensor map(String value) throws Exception {
         String[] elementList = value.split(",");
-        return new WaterSensor(elementList[0], Long.valueOf(elementList[1]), Integer.valueOf(elementList[2]));
+        // Sensor identifier
+        String id = elementList[0];
+        // Timestamp
+        Long ts = Long.valueOf(elementList[1]);
+        // A metric value, meaning a count, or temperature
+        Integer vc = Integer.valueOf(elementList[2]);
+        return new WaterSensor(id, ts, vc);
     }
 }
