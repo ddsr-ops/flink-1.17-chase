@@ -46,6 +46,14 @@ public class KeyedMapStateDemo {
                 .process(
                         new KeyedProcessFunction<String, WaterSensor, String>() {
 
+
+                            /*
+                             * Flink provides MapState and ListState types that are optimized for RocksDB. Where
+                             * possible, these should be used instead of a ValueState object holding some sort of
+                             * collection. The RocksDB state backend can append to ListState without going through
+                             * (de)serialization, and for MapState, each key/value pair is a separate RocksDB object,
+                             *  so MapState can be efficiently accessed and updated.
+                             */
                             MapState<Integer, Integer> vcCountMapState;
 
                             @Override
