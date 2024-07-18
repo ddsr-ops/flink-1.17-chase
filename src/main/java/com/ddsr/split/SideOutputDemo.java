@@ -24,6 +24,10 @@ public class SideOutputDemo {
         // 泛型 - 输出的类型， id - Tag标志
         OutputTag<WaterSensor> s1 = new OutputTag<>("s1", Types.POJO(WaterSensor.class));
         OutputTag<WaterSensor> s2 = new OutputTag<WaterSensor>("s2", Types.POJO(WaterSensor.class)){};
+
+        // Reference the same tag with both the same id and the same type
+        OutputTag<WaterSensor> s11 = new OutputTag<>("s1", Types.POJO(WaterSensor.class));
+
         //返回的都是主流
         SingleOutputStreamOperator<WaterSensor> ds1 = ds.process(new ProcessFunction<WaterSensor, WaterSensor>()
         {
@@ -47,8 +51,22 @@ public class SideOutputDemo {
         SideOutputDataStream<WaterSensor> s1DS = ds1.getSideOutput(s1);
         SideOutputDataStream<WaterSensor> s2DS = ds1.getSideOutput(s2);
 
+        // you can use two OutputTags with the same name to refer to the same side output, but if you do, they must have the same type.
+        SideOutputDataStream<WaterSensor> s11DS = ds1.getSideOutput(s11);
+
         s1DS.printToErr("s1");
         s2DS.printToErr("s2");
+        s11DS.printToErr("s11");
+
+        /*
+         * s1:11> WaterSensor{id='s1', ts=1, vc=1}
+         * s11:11> WaterSensor{id='s1', ts=1, vc=1}
+         * 主流，非s1,s2的传感器:12> WaterSensor{id='s3', ts=3, vc=3}
+         * s2:1> WaterSensor{id='s2', ts=2, vc=2}
+         * s1:2> WaterSensor{id='s1', ts=11, vc=11}
+         * s11:2> WaterSensor{id='s1', ts=11, vc=11}
+         */
+
 
         env.execute();
 
