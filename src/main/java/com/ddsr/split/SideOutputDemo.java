@@ -54,9 +54,9 @@ public class SideOutputDemo {
         // you can use two OutputTags with the same name to refer to the same side output, but if you do, they must have the same type.
         SideOutputDataStream<WaterSensor> s11DS = ds1.getSideOutput(s11);
 
-        s1DS.printToErr("s1");
+        s1DS.printToErr("s1"); // s1 will output the same side output as s11
         s2DS.printToErr("s2");
-        s11DS.printToErr("s11");
+        s11DS.printToErr("s11"); // s11 will output the same side output as s1
 
         /*
          * s1:11> WaterSensor{id='s1', ts=1, vc=1}
