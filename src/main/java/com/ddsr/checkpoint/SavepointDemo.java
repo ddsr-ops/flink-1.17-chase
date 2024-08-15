@@ -11,6 +11,9 @@ import org.apache.flink.util.Collector;
 import java.time.Duration;
 
 /**
+ * Savepoints are manually triggered checkpoints, which take a snapshot of the program and write it out to a state
+ * backend. They rely on the regular checkpointing mechanism for this.
+ *
  * @author ddsr, created it at 2023/10/7 22:42
  */
 public class SavepointDemo {
@@ -71,7 +74,7 @@ public class SavepointDemo {
 }
 
 
-/**
+/*
  * source --> map --> sum --> print
  *
  * source --> map --> sum     --> print
