@@ -56,6 +56,10 @@ public class CheckpointConfigDemo {
         //  开启 非对齐检查点（barrier非对齐）
         // 开启的要求： Checkpoint模式必须是精准一次，最大并发必须设为1
         // Note that savepoints will always be aligned.
+
+        // Unaligned Recovery: Operators first recover the in-flight data before starting processing any data from
+        // upstream operators in unaligned checkpointing. Aside from that, it performs the same steps as during recovery
+        // of aligned checkpoints.
         checkpointConfig.enableUnalignedCheckpoints();
         // 开启非对齐检查点才生效： 默认0，表示一开始就直接用 非对齐的检查点
         // 如果大于0， 一开始用 对齐的检查点（barrier对齐）， 对齐的时间超过这个参数，自动切换成 非对齐检查点（barrier非对齐）
