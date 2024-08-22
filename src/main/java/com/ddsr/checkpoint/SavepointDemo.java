@@ -47,6 +47,10 @@ public class SavepointDemo {
         checkpointConfig.setTolerableCheckpointFailureNumber(10);
 
         //  开启 非对齐检查点（barrier非对齐）
+        // Alignment happens only for operators with multiple predecessors (joins) as well as operators with multiple
+        // senders (after a stream repartitioning/shuffle). Because of that, dataflows with only embarrassingly
+        // parallel streaming operations (map(), flatMap(), filter(), …) actually give exactly once guarantees even
+        // in at least once mode.
         // 开启的要求： Checkpoint模式必须是精准一次，最大并发必须设为1
         checkpointConfig.enableUnalignedCheckpoints();
         // 开启非对齐检查点才生效： 默认0，表示一开始就直接用 非对齐的检查点

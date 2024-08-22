@@ -29,6 +29,10 @@ public class CheckpointConfigDemo {
         // Barrier alignment is only needed for providing exactly once guarantees. If you don’t need this, you can gain
         // some performance by configuring Flink to use CheckpointingMode.AT_LEAST_ONCE, which has the effect of
         // disabling barrier alignment.
+
+        // Exactly once this does not mean that every event will be processed exactly once. Instead, it means that
+        // every event will affect the state being managed by Flink exactly once.
+
         // Exactly Once End-to-end #
 
         //To achieve exactly once end-to-end, so that every event from the sources affects the sinks exactly once, the
@@ -56,6 +60,11 @@ public class CheckpointConfigDemo {
         //  开启 非对齐检查点（barrier非对齐）
         // 开启的要求： Checkpoint模式必须是精准一次，最大并发必须设为1
         // Note that savepoints will always be aligned.
+
+        // Alignment happens only for operators with multiple predecessors (joins) as well as operators with multiple
+        // senders (after a stream repartitioning/shuffle). Because of that, dataflows with only embarrassingly
+        // parallel streaming operations (map(), flatMap(), filter(), …) actually give exactly once guarantees even
+        // in at least once mode.
 
         // Unaligned Recovery: Operators first recover the in-flight data before starting processing any data from
         // upstream operators in unaligned checkpointing. Aside from that, it performs the same steps as during recovery
