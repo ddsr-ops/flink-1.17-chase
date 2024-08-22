@@ -1,12 +1,24 @@
 package com.ddsr.sql.java;
 
+import org.apache.flink.connector.jdbc.dialect.mysql.MySqlDialect;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 
 /**
  * This demo use cdc-apply-dev.sql to illustrate how the upsert action is performed. Within the demo, breakpoints
- * should be added .. to debug.
+ * should be added {@link MySqlDialect#getUpsertStatement(String, String[], String[])} to debug.
  * <p>
+ *
+ * The upsert SQL looks like this :
+ * <blockquote><pre>
+ * INSERT INTO `t_card_bind`(`id`, `card_no`, `card_status`, `status`, `update_ts`)
+ * VALUES (30, '6115000160013102','01', 0, '2024-08-20 09:13:56')
+ * ON DUPLICATE KEY UPDATE `id`=VALUES(`id`),
+ *                         `card_no`=VALUES(`card_no`),
+ *                         `card_status`=VALUES(`card_status`),
+ *                         `status`=VALUES(`status`),
+ *                         `update_ts`=VALUES(`update_ts`)
+ * </pre></blockquote>
  *
  * This demo should be debugged in tft dev environment, which depends on:
  * <li>MySQL 8 source database</li>
@@ -15,7 +27,7 @@ import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
  * <li>Apache Kafka Connect Cluster with Debezium MySQL plugins</li>
  * <li>An CDC road streams change events of t_card_info table to Apache Kafka topic</li>
  *
- * @author ddsr, created it at 2023/12/2 20:14
+ * @author ddsr, created it at 2024-8-20 09:24:29
  */
 public class MySQLUpsertDemo {
     public static void main(String[] args) {
