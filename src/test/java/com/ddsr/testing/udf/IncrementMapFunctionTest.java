@@ -17,7 +17,7 @@ public class IncrementMapFunctionTest {
     public void testIncrement() throws Exception {
         IncrementMapFunction incrementMapFunction = new IncrementMapFunction();
 
-        assertEquals(Optional.of(2L), incrementMapFunction.map(1L));
+        assertEquals(Optional.of(3L), Optional.ofNullable(incrementMapFunction.map(2L)));
 
     }
 }

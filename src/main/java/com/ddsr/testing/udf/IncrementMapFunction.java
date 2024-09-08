@@ -3,8 +3,8 @@ package com.ddsr.testing.udf;
 import org.apache.flink.api.common.functions.MapFunction;
 
 /**
- * Unit testing stateless, timeless udfs using flink-test-utils
- *
+ * Unit testing stateless, timeless udfs using flink-test-utils. See
+ * {@link com.ddsr.testing.udf.IncrementMapFunctionTest}
  *
  * @author ddsr, created it at 2024/9/2 18:28
  */
