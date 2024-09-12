@@ -30,9 +30,10 @@ public class IncrementFlatMapFunctionTest {
         Collector<Long> collector = mock(Collector.class);
 
         // call the methods that have been implemented
-        incrementFlatMapFunction.flatMap(3L, collector);
+        incrementFlatMapFunction.flatMap(2L, collector);
 
-        // todo: what does the times mean?
+        // verify collector was called with the right output
+        // times(1) means that the method should be called once
         Mockito.verify(collector, times(1)).collect(3L);
     }
 
