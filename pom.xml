@@ -30,10 +30,24 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-runtime</artifactId>
+            <version>${flink.version}</version>
+            <!-- NOTE mvn shows test scope -->
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <!-- for Table API & SQL test -->
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-table-test-utils</artifactId>
             <version>${flink.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-test-utils-junit</artifactId>
+            <version>${flink.version}</version>
+            <!-- NOTE mvn shows test scope -->
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -77,6 +91,7 @@
             <artifactId>flink-streaming-java</artifactId>
             <version>${flink.version}</version>
             <scope>provided</scope>
+            <classifier>tests</classifier>
         </dependency>
         <dependency>
             <groupId>org.apache.flink</groupId>
