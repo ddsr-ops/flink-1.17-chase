@@ -2,11 +2,9 @@ package com.ddsr.testing.udf;
 
 import com.ddsr.state.StatefulFlatMap;
 import org.apache.flink.streaming.api.operators.StreamFlatMap;
-import org.junit.Before;
 import org.apache.flink.streaming.util.OneInputStreamOperatorTestHarness;
+import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.assertThat;
 
 /**
  * @see <a href=https://stackoverflow.com/questions/70421139/intellij-cant-find-flink-test-harness-util>resolve dependency</a>
