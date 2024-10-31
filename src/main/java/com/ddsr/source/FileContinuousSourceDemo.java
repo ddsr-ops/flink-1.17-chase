@@ -1,13 +1,10 @@
 package com.ddsr.source;
 
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
-import org.apache.flink.api.connector.source.Boundedness;
-import org.apache.flink.api.java.io.TextInputFormat;
 import org.apache.flink.connector.file.src.FileSource;
 import org.apache.flink.connector.file.src.reader.TextLineInputFormat;
 import org.apache.flink.core.fs.Path;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.api.functions.source.FileProcessingMode;
 
 import java.time.Duration;
 
@@ -36,7 +33,6 @@ public class FileContinuousSourceDemo {
              .monitorContinuously(Duration.of(1, SECONDS))
                         .build();
 
-        Boundedness boundedness = source.getBoundedness();
 
 //         Read the files in the input directory continuously, when files are modified, modification should be found
         // This implementation can not find the modification, whether the file is modified or files are added, the
