@@ -20,7 +20,7 @@ public class CollectionDemo {
          program, and invoke it through the command line, the Flink cluster manager will execute your main method and
           getExecutionEnvironment() will return an execution environment for executing your program on a cluster. */
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        env.setParallelism(1);
+        env.setParallelism(2);
         //        env.setRuntimeMode(RuntimeExecutionMode.BATCH);
         //        env.fromCollection(Arrays.asList(1, 3, 4, 5))
         //                .print();
@@ -33,16 +33,20 @@ public class CollectionDemo {
 //                .print();
         // So use a custom iterator
         String[] strArray = {"d", "d", "s", "r"};
-        SerializableStringIterator serializableStringIterator = new SerializableStringIterator(strArray);
-        env.fromCollection(serializableStringIterator, Types.STRING)
-                .print();
-
-        env.fromElements(Integer.class, 1, 3, 4, 5)
-                .print();
+//        SerializableStringIterator serializableStringIterator = new SerializableStringIterator(strArray);
+//        env.fromCollection(serializableStringIterator, Types.STRING)
+//                .print();
+//
+//        env.fromElements(Integer.class, 1, 3, 4, 5)
+//                .print();
 
         // type of elements must be the same
-        env.fromElements("3", "3", "5", "5")
-                .printToErr();
+//        env.fromElements("3", "3", "5", "5")
+//                .printToErr();
+
+        // In one parallelism, produce a sequence from 2 to 11 in order, step by one
+        // If more than one parallelism(env.setParallelism(2);), see the docs of fromSequence
+        env.fromSequence(2, 11).print();
 
         // This is synchronous action
 //        env.execute();
