@@ -13,8 +13,11 @@ public class SocketSinkDemo {
 
         env.setParallelism(1);
 
-        // todo: test
-        env.fromElements("hello", "world")
+        // [root@centos7 ~]# nc -lkp 9999
+        //hello
+        //world
+        env.fromElements("hello", "\n", "world")
+
                 .writeToSocket(
                         "192.168.20.140",
                         9999,
