@@ -17,7 +17,7 @@ public class SocketSinkDemo {
         //hello
         //world
         env.fromElements("hello", "\n", "world")
-
+        // If no "\n", "helloworld" will be output on the nc side
                 .writeToSocket(
                         "192.168.20.140",
                         9999,

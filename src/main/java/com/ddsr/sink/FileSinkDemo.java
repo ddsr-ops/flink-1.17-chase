@@ -20,6 +20,14 @@ import java.time.Duration;
 import java.time.ZoneId;
 
 /**
+ * Note that the write*() methods on DataStream are mainly intended for debugging purposes. They are not participating
+ * in Flink’s checkpointing, this means these functions usually have at-least-once semantics. The data flushing to the
+ * target system depends on the implementation of the OutputFormat. This means that not all elements send to the
+ * OutputFormat are immediately showing up in the target system. Also, in failure cases, those records might be lost.
+ * <p>
+ * For reliable, exactly-once delivery of a stream into a file system, use the FileSink. Also, custom implementations
+ * through the .addSink(...) method can participate in Flink’s checkpointing for exactly-once semantics.
+ *
  * @author ddsr, created it at 2023/8/20 9:33
  */
 public class FileSinkDemo {
@@ -45,14 +53,16 @@ public class FileSinkDemo {
                 Types.STRING
         );
 
-        DataStreamSource<String> dataGen = env.fromSource(dataGeneratorSource, WatermarkStrategy.noWatermarks(), "data-generator");
+        DataStreamSource<String> dataGen = env.fromSource(dataGeneratorSource, WatermarkStrategy.noWatermarks(),
+                "data-generator");
 
         FileSink<String> fileSink = FileSink
                 // output file through row format, specify encoder as utf-8
                 // public static <IN> DefaultRowFormatBuilder<IN> forRowFormat(..){}
                 .<String>forRowFormat(new Path("D:/tmp/flink"),
                         new SimpleStringEncoder<>("UTF-8"))
-                .withBucketCheckInterval(1) // Control the frequency of checking withRolloverInterval, the default value is 60 seconds
+                .withBucketCheckInterval(1) // Control the frequency of checking withRolloverInterval, the default
+                // value is 60 seconds
                 // Specify file prefix and suffix
                 .withOutputFileConfig(OutputFileConfig.builder()
                         .withPartPrefix("ddsr-")
@@ -62,8 +72,10 @@ public class FileSinkDemo {
                 .withBucketAssigner(new DateTimeBucketAssigner<>("yyyy-MM-dd HH", ZoneId.systemDefault()))
                 // File roll strategy
                 .withRollingPolicy(DefaultRollingPolicy.builder()
-                        // Sets the max time a part file can stay open before having to roll. The frequency at which this is checked is controlled
-                        // by the org.apache.flink.streaming.api.functions.sink.filesystem.StreamingFileSink.RowFormatBuilder.withBucketCheckInterval(long) setting
+                        // Sets the max time a part file can stay open before having to roll. The frequency at which
+                        // this is checked is controlled
+                        // by the org.apache.flink.streaming.api.functions.sink.filesystem.StreamingFileSink
+                        // .RowFormatBuilder.withBucketCheckInterval(long) setting
                         .withRolloverInterval(Duration.ofSeconds(3)) // or
                         .withMaxPartSize(new MemorySize(1024 * 1024)) // or
                         .build()
