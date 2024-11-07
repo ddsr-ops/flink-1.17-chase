@@ -1,6 +1,6 @@
 package com.ddsr.word.count;
 
-import org.apache.flink.core.execution.JobClient;
+import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.LocalStreamEnvironment;
@@ -27,7 +27,8 @@ public class IteratorDataSinkDemo {
         DataStreamSource<Integer> integerDataStream = env.fromElements(1, 2, 3, 4, 5);
 
         // Perform transformation: multiply each element by 2
-        SingleOutputStreamOperator<Integer> multipleByTwoDataStream = integerDataStream.map(i -> i * 2);
+//        SingleOutputStreamOperator<Integer> multipleByTwoDataStream = integerDataStream.map(i -> i * 2);
+        SingleOutputStreamOperator<Integer> multipleByTwoDataStream = integerDataStream.map(new MyMapper());
 
         // Collect the transformed data stream asynchronously
         Iterator<Integer> iterator = multipleByTwoDataStream.collectAsync();
@@ -38,6 +39,14 @@ public class IteratorDataSinkDemo {
         // Print the collected results
         while (iterator.hasNext()) {
             System.out.println(iterator.next());
+        }
+    }
+
+    private static class MyMapper implements MapFunction<Integer, Integer> {
+
+        @Override
+        public Integer map(Integer value) {
+            return value * 2;
         }
     }
 }
