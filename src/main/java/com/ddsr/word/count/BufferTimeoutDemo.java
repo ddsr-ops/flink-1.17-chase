@@ -29,9 +29,11 @@ public class BufferTimeoutDemo {
         LocalStreamEnvironment env = StreamExecutionEnvironment.createLocalEnvironment();
         env.setParallelism(1);
         int timeoutMillis = 1000;
+        // global buffer timeout for all operators
         env.setBufferTimeout(timeoutMillis);
 
         SingleOutputStreamOperator<String> ds = env.generateSequence(1, 10).map(i -> "*" + i + "*");
+        // operator buffer timeout
         ds.setBufferTimeout(timeoutMillis).print();
 
         env.execute();
