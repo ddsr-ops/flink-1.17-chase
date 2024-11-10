@@ -18,10 +18,10 @@ import java.util.Properties;
  * unbounded job. For example, by running a bounded job using STREAMING mode, taking a savepoint, and then restoring
  * that savepoint on an unbounded job.
  *
- * @see UnBoundedJob
+ * @see BoundedJob
  */
 @SuppressWarnings({"deprecation", "DuplicatedCode"})
-public class BoundedJob {
+public class UnBoundedJob {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
@@ -30,7 +30,6 @@ public class BoundedJob {
         Properties props = new Properties();
         props.setProperty("bootstrap.servers", "localhost:9092");
         props.setProperty("group.id", "flink-group");
-        props.setProperty("max.poll.records", "10"); // Read only 1000 records meaning a batch
 
 
         // Kafka message likes this: 1 2 3 4 5 6 7 8 9 10
@@ -65,6 +64,6 @@ public class BoundedJob {
                 })
                 .print();
 
-        env.execute("Bounded Job");
+        env.execute("UnBounded Job");
     }
 }
