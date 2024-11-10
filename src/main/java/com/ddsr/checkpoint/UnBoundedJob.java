@@ -18,6 +18,10 @@ import java.util.Properties;
  * unbounded job. For example, by running a bounded job using STREAMING mode, taking a savepoint, and then restoring
  * that savepoint on an unbounded job.
  *
+ * <blockquote><pre>
+ *     flink run -s file:///tmp/savepoints/<savepoint-id> -c UnboundedJob /path/to/your/flink-job.jar
+ * </pre></blockquote>
+ *
  * @see BoundedJob
  */
 @SuppressWarnings({"deprecation", "DuplicatedCode"})
