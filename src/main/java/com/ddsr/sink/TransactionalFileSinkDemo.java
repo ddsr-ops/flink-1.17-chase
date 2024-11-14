@@ -9,7 +9,6 @@ import org.apache.flink.streaming.api.functions.sink.TwoPhaseCommitSinkFunction;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.util.UUID;
 
 /**
@@ -20,6 +19,7 @@ public class TransactionalFileSinkDemo {
         // Set up the execution environment
         final StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironment();
         env.setRuntimeMode(org.apache.flink.api.common.RuntimeExecutionMode.BATCH);
+        env.setParallelism(1);
 
         // Create a simple DataStream
         DataStream<String> dataStream = env.fromElements("line1", "line2", "FAIL", "line4");
@@ -33,6 +33,7 @@ public class TransactionalFileSinkDemo {
     }
 
     // Custom transactional file sink
+    @SuppressWarnings({"ResultOfMethodCallIgnored", "DataFlowIssue"})
     public static class CustomTransactionalFileSink extends TwoPhaseCommitSinkFunction<String, String, Void> {
         private final String outputPath;
 
@@ -53,9 +54,9 @@ public class TransactionalFileSinkDemo {
 
         @Override
         protected void invoke(String transaction, String value, Context context) throws Exception {
-            if ("FAIL".equals(value)) {
-                throw new IOException("Simulated failure");
-            }
+            //            if ("FAIL".equals(value)) {
+            //                throw new IOException("Simulated failure");
+            //            }
             String transactionPath = outputPath + "/" + transaction;
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(transactionPath + "/part-0", true))) {
                 writer.write(value);
