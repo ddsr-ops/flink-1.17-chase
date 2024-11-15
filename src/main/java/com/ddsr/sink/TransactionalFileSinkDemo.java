@@ -12,6 +12,12 @@ import java.io.FileWriter;
 import java.util.UUID;
 
 /**
+ * beginTransaction – 在事务开始前，我们在目标文件系统的临时目录中创建一个临时文件。随后，我们可以在处理数据时将数据写入此文件。
+ * preCommit – 在预提交阶段，我们刷新文件到存储，关闭文件，不再重新写入。我们还将为属于下一个checkpoint的任何后续文件写入启动一个新的事务。
+ * commit – 在提交阶段，我们将预提交阶段的文件原子地移动到真正的目标目录。需要注意的是，这会增加输出数据可见性的延迟。
+ * abort – 在中止阶段，我们删除临时文件。
+ * <p>
+ * todo: need more experiments
  * @author ddsr, created it at 2024/11/13 17:29
  */
 public class TransactionalFileSinkDemo {
@@ -54,9 +60,9 @@ public class TransactionalFileSinkDemo {
 
         @Override
         protected void invoke(String transaction, String value, Context context) throws Exception {
-            //            if ("FAIL".equals(value)) {
-            //                throw new IOException("Simulated failure");
-            //            }
+            /*if ("FAIL".equals(value)) {
+                throw new IOException("Simulated failure");
+            }*/
             String transactionPath = outputPath + "/" + transaction;
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(transactionPath + "/part-0", true))) {
                 writer.write(value);
