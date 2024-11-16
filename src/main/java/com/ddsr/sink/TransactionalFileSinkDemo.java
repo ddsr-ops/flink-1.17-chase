@@ -17,7 +17,7 @@ import java.util.UUID;
  * commit – 在提交阶段，我们将预提交阶段的文件原子地移动到真正的目标目录。需要注意的是，这会增加输出数据可见性的延迟。
  * abort – 在中止阶段，我们删除临时文件。
  * <p>
- * todo: need more experiments
+ * need more experiments
  * @author ddsr, created it at 2024/11/13 17:29
  */
 public class TransactionalFileSinkDemo {
