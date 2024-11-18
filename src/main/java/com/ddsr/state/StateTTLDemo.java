@@ -3,9 +3,7 @@ package com.ddsr.state;
 import com.ddsr.bean.WaterSensor;
 import com.ddsr.functions.WaterSensorMapFunc;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
-import org.apache.flink.api.common.state.StateTtlConfig;
-import org.apache.flink.api.common.state.ValueState;
-import org.apache.flink.api.common.state.ValueStateDescriptor;
+import org.apache.flink.api.common.state.*;
 import org.apache.flink.api.common.time.Time;
 import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.configuration.Configuration;
@@ -57,6 +55,7 @@ public class StateTTLDemo {
                         new KeyedProcessFunction<String, WaterSensor, String>() {
 
                             ValueState<Integer> lastVcState;
+                            ListState<Integer> vcListState;
 
 
                             @Override
@@ -113,9 +112,22 @@ public class StateTTLDemo {
                                 //  2.状态描述器 启用 TTL
                                 ValueStateDescriptor<Integer> stateDescriptor = new ValueStateDescriptor<>("lastVcState", Types.INT);
                                 stateDescriptor.enableTimeToLive(stateTtlConfig);
-
-
                                 this.lastVcState = getRuntimeContext().getState(stateDescriptor);
+
+
+                                // All state collection types support per-entry TTLs. This means that list elements and map entries expire independently.
+                                StateTtlConfig stateTtlConfig1 = StateTtlConfig
+                                        .newBuilder(Time.seconds(3)) // 过期时间5s
+//                                        .setUpdateType(StateTtlConfig.UpdateType.OnCreateAndWrite) // 状态 创建和写入（更新） 更新 过期时间
+                                        .setUpdateType(StateTtlConfig.UpdateType.OnReadAndWrite) // 状态 读取、创建和写入（更新） 更新 过期时间
+                                        .setStateVisibility(StateTtlConfig.StateVisibility.NeverReturnExpired)
+                                        .build();
+                                ListStateDescriptor<Integer> vcListState1 = new ListStateDescriptor<>("vcListState",
+                                        Types.INT);
+                                vcListState1.enableTimeToLive(stateTtlConfig1);
+                                vcListState = getRuntimeContext().getListState(vcListState1);
+
+
 
                             }
 
