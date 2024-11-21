@@ -107,6 +107,8 @@ public class StateTTLDemo {
                                         // where at least the first element has expired to determine the offset of
                                         // the next unexpired element.
 //                                        .cleanupInRocksdbCompactFilter(1000)
+                                        // Only TTLs in reference to processing time are currently supported.
+                                        .setTtlTimeCharacteristic(StateTtlConfig.TtlTimeCharacteristic.ProcessingTime)
                                         .build();
 
                                 //  2.状态描述器 启用 TTL

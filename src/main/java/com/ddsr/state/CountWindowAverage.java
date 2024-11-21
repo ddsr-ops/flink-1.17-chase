@@ -36,6 +36,7 @@ public class CountWindowAverage extends RichFlatMapFunction<Tuple2<Long, Long>, 
         sum.update(currentSum);
 
         // if the count reaches 2, emit the average and clear the state
+        // Note: this is not average for all values, only two
         if (currentSum.f0 >= 2) {
             out.collect(new Tuple2<>(input.f0, currentSum.f1 / currentSum.f0));
             sum.clear();
@@ -58,6 +59,7 @@ public class CountWindowAverage extends RichFlatMapFunction<Tuple2<Long, Long>, 
         env.setParallelism(1);
 
         // this can be used in a streaming program like this (assuming we have a StreamExecutionEnvironment env)
+        // the first field of tuple only is used be as key without other meaning.
         env.fromElements(Tuple2.of(1L, 3L), Tuple2.of(1L, 5L), Tuple2.of(1L, 7L), Tuple2.of(1L, 4L), Tuple2.of(1L, 2L),
                         Tuple2.of(2L, 3L), Tuple2.of(2L, 5L), Tuple2.of(2L, 8L), Tuple2.of(2L, 4L))
                 .keyBy(value -> value.f0)
