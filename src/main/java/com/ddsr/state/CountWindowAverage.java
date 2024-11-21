@@ -58,12 +58,38 @@ public class CountWindowAverage extends RichFlatMapFunction<Tuple2<Long, Long>, 
         env.setParallelism(1);
 
         // this can be used in a streaming program like this (assuming we have a StreamExecutionEnvironment env)
-        env.fromElements(Tuple2.of(1L, 3L), Tuple2.of(1L, 5L), Tuple2.of(1L, 7L), Tuple2.of(1L, 4L), Tuple2.of(1L, 2L))
+        env.fromElements(Tuple2.of(1L, 3L), Tuple2.of(1L, 5L), Tuple2.of(1L, 7L), Tuple2.of(1L, 4L), Tuple2.of(1L, 2L),
+                        Tuple2.of(2L, 3L), Tuple2.of(2L, 5L), Tuple2.of(2L, 8L), Tuple2.of(2L, 4L))
                 .keyBy(value -> value.f0)
                 .flatMap(new CountWindowAverage())
                 .print();
 
-        // the printed output will be (1,4) and (1,5)
+        // the printed output will be (1,4) and (1,5), (2, 4), (2, 6)
+
+        /*
+         * Processing Tuples:
+         * First Tuple (1L, 3L):
+         * currentSum is (0L, 0L).
+         * After updating, currentSum becomes (1L, 3L).
+         * Since currentSum.f0 (count) is 1, it does not emit any result.
+         * Second Tuple (1L, 5L):
+         * currentSum is (1L, 3L).
+         * After updating, currentSum becomes (2L, 8L).
+         * Since currentSum.f0 (count) is 2, it emits (1, 8/2) = (1, 4) and clears the state.
+         * Third Tuple (1L, 7L):
+         * currentSum is reset to (0L, 0L).
+         * After updating, currentSum becomes (1L, 7L).
+         * Since currentSum.f0 (count) is 1, it does not emit any result.
+         * Fourth Tuple (1L, 4L):
+         * currentSum is (1L, 7L).
+         * After updating, currentSum becomes (2L, 11L).
+         * Since currentSum.f0 (count) is 2, it emits (1, 11/2) = (1, 5) and clears the state.
+         * Fifth Tuple (1L, 2L):
+         * currentSum is reset to (0L, 0L).
+         * After updating, currentSum becomes (1L, 2L).
+         * Since currentSum.f0 (count) is 1, it does not emit any result.
+         * Final Output: The two emitted results are (1, 4) and (1, 5).
+         */
 
         env.execute();
 
