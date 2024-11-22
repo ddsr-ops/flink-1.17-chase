@@ -7,6 +7,7 @@ import org.apache.flink.api.common.state.*;
 import org.apache.flink.api.common.time.Time;
 import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.configuration.Configuration;
+import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.KeyedProcessFunction;
@@ -38,6 +39,7 @@ import java.time.Duration;
 public class StateTTLDemo {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
         env.setParallelism(1);
 
 
@@ -108,6 +110,7 @@ public class StateTTLDemo {
                                         // the next unexpired element.
 //                                        .cleanupInRocksdbCompactFilter(1000)
                                         // Only TTLs in reference to processing time are currently supported.
+                                        // This processing time is not relevant to env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
                                         .setTtlTimeCharacteristic(StateTtlConfig.TtlTimeCharacteristic.ProcessingTime)
                                         .build();
 
