@@ -28,6 +28,10 @@ public class TTLVersaWithoutTTL {
         ValueStateDescriptor<String> descriptorWithoutTTL = new ValueStateDescriptor<>("stateName", String.class);
         // No TTL configuration
 
+
+        // the Time-to-Live (TTL) settings you configure for state management in Apache Flink do not get stored in
+        // the checkpoints or savepoints themselves. Instead, these TTL settings dictate how the state is managed and
+        // cleaned up during the execution of the running job.
         StateTtlConfig ttlConfig = StateTtlConfig
                 .newBuilder(Time.minutes(10))
                 .setUpdateType(StateTtlConfig.UpdateType.OnCreateAndWrite)
