@@ -9,6 +9,8 @@ import org.apache.flink.api.common.typeutils.base.StringSerializer;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.typeutils.runtime.NullableSerializer;
 import org.apache.flink.configuration.Configuration;
+import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.KeyedProcessFunction;
 import org.apache.flink.util.Collector;
 
@@ -20,7 +22,28 @@ import org.apache.flink.util.Collector;
  * @author ddsr, created it at 2024/11/25 18:10
  */
 public class NullInMapStateDemo {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
+        // Set up the execution environment
+        final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+
+        // Sample data stream
+        DataStream<Tuple2<String, Integer>> input = env.fromElements(
+                Tuple2.of("key1", 1),
+                Tuple2.of("key2", 2),
+                Tuple2.of("key1", null), // Null value example
+                Tuple2.of("key2", 3)
+        );
+
+        // Apply a transformation with stateful processing
+        DataStream<String> result = input
+                .keyBy(tuple -> tuple.f0)
+                .process(new StatefulMapFunction());
+
+        // Print the result
+        result.print();
+
+        // Execute the job
+        env.execute("Flink Map State with TTL Example");
 
     }
 
