@@ -80,6 +80,10 @@ public class StateTTLDemo {
                                         // state backend
 //                                        .cleanupFullSnapshot()
 
+
+                                        // For existing jobs, this cleanup strategy can be activated or deactivated
+                                        // anytime in StateTtlConfig, e.g. after restart from savepoint.
+
                                         // Another option is to trigger cleanup of some state entries incrementally.
                                         // The trigger can be a callback from each state access or/and each record
                                         // processing. If this cleanup strategy is active for certain state, The
