@@ -96,6 +96,7 @@ public class StateTTLDemo {
                                         // access. The second parameter defines whether to trigger cleanup
                                         // additionally per each record processing. The default background cleanup
                                         // for heap backend checks 5 entries without cleanup per record processing.
+                                        // // // Incremental cleanup is Only for Heap state backend, not for RocksDB
 //                                        .cleanupIncrementally(10, true)
 
                                         // If the RocksDB state backend is used, a Flink specific compaction filter
