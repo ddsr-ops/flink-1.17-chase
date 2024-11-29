@@ -79,8 +79,6 @@ public class StateTTLDemo {
                                         // This option is not applicable for the incremental checkpointing in the RocksDB
                                         // state backend
 //                                        .cleanupFullSnapshot()
-
-
                                         // For existing jobs, this cleanup strategy can be activated or deactivated
                                         // anytime in StateTtlConfig, e.g. after restart from savepoint.
 
@@ -97,7 +95,12 @@ public class StateTTLDemo {
                                         // additionally per each record processing. The default background cleanup
                                         // for heap backend checks 5 entries without cleanup per record processing.
                                         // // // Incremental cleanup is Only for Heap state backend, not for RocksDB
+                                        // Note:
+                                        //     1. If no access happens to the state or no records are processed, expired state will persist.
+                                        //     2. Time spent for the incremental cleanup increases record processing latency.
 //                                        .cleanupIncrementally(10, true)
+                                        // For existing jobs, this cleanup strategy can be activated or deactivated
+                                        // anytime in StateTtlConfig, e.g. after restart from savepoint.
 
                                         // If the RocksDB state backend is used, a Flink specific compaction filter
                                         // will be called for the background cleanup. RocksDB periodically runs
@@ -113,6 +116,9 @@ public class StateTTLDemo {
                                         // Flink java type serializer of the element over JNI per each state entry
                                         // where at least the first element has expired to determine the offset of
                                         // the next unexpired element.
+                                        // In Flink 1.20, periodic compaction time can be configured, but the 1.17
+                                        // can`t. Through cleanupInRocksdbCompactFilter(long queryTimeAfterNumEntries,
+                                        // Duration periodicCompactionTime) method
 //                                        .cleanupInRocksdbCompactFilter(1000)
                                         // Only TTLs in reference to processing time are currently supported.
                                         // This processing time is not relevant to env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
