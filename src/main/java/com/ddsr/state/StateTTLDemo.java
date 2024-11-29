@@ -120,6 +120,9 @@ public class StateTTLDemo {
                                         // can`t. Through cleanupInRocksdbCompactFilter(long queryTimeAfterNumEntries,
                                         // Duration periodicCompactionTime) method
 //                                        .cleanupInRocksdbCompactFilter(1000)
+                                        // For existing jobs, this cleanup strategy can be activated or deactivated
+                                        // anytime in StateTtlConfig, e.g. after restart from savepoint.
+                                        // Periodic compaction could only work when TTL is enabled.
                                         // Only TTLs in reference to processing time are currently supported.
                                         // This processing time is not relevant to env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
                                         .setTtlTimeCharacteristic(StateTtlConfig.TtlTimeCharacteristic.ProcessingTime)
