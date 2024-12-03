@@ -17,6 +17,8 @@ public class UnionListOperatorState {
 
     public static class CustomSource implements ParallelSourceFunction<Long>, CheckpointedFunction {
         // ? volatile
+        // the volatile is used to ensure the variable is updated immediately when we change it in other threads
+        // the visibility of variable is not guaranteed in java memory model without volatile or synchronized
         private volatile boolean isRunning = true;
         private transient ListState<Long> unionListState;
         private List<Long> localState = new ArrayList<>();
