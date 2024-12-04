@@ -16,18 +16,18 @@ import java.util.List;
 public class UnionListOperatorState {
 
     public static class CustomSource implements ParallelSourceFunction<Long>, CheckpointedFunction {
-        // ? volatile
+        // volatile keyword illustration:
         // the volatile is used to ensure the variable is updated immediately when we change it in other threads
         // the visibility of variable is not guaranteed in java memory model without volatile or synchronized
         private volatile boolean isRunning = true;
         private transient ListState<Long> unionListState;
-        private List<Long> localState = new ArrayList<>();
+        private final List<Long> localList = new ArrayList<>();
 
         @Override
         public void snapshotState(FunctionSnapshotContext context) throws Exception {
 
             unionListState.clear();
-            unionListState.addAll(localState);
+            unionListState.addAll(localList);
         }
 
         @Override
@@ -42,7 +42,7 @@ public class UnionListOperatorState {
 
             if (context.isRestored()) {
                 for (Long l : unionListState.get()) {
-                    localState.add(l);
+                    localList.add(l);
                 }
             }
         }
@@ -53,7 +53,7 @@ public class UnionListOperatorState {
             while (isRunning) {
                 synchronized (ctx.getCheckpointLock()) {
                     ctx.collect(count);
-                    localState.add(count);
+                    localList.add(count);
                     count++;
                 }
                 Thread.sleep(1000);
