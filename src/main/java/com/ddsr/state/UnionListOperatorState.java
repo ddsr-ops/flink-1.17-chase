@@ -5,6 +5,7 @@ import org.apache.flink.api.common.state.ListStateDescriptor;
 import org.apache.flink.runtime.state.FunctionInitializationContext;
 import org.apache.flink.runtime.state.FunctionSnapshotContext;
 import org.apache.flink.streaming.api.checkpoint.CheckpointedFunction;
+import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
 import org.apache.flink.streaming.api.functions.source.ParallelSourceFunction;
 
 import java.util.ArrayList;
@@ -40,6 +41,7 @@ public class UnionListOperatorState {
 
             unionListState = context.getOperatorStateStore().getUnionListState(descriptor);
 
+            // if the job is restored, the recover the state to populate the local list
             if (context.isRestored()) {
                 for (Long l : unionListState.get()) {
                     localList.add(l);
@@ -51,8 +53,11 @@ public class UnionListOperatorState {
         public void run(SourceContext<Long> ctx) throws InterruptedException {
             long count = 0;
             while (isRunning) {
+                // why to use the synchronized keyword and lock is to reference to the doc of
+                // org.apache.flink.streaming.api.functions.source.SourceFunction.run
                 synchronized (ctx.getCheckpointLock()) {
                     ctx.collect(count);
+                    // atomic modification of the local list is controlled by checkpoint lock?
                     localList.add(count);
                     count++;
                 }
@@ -65,6 +70,51 @@ public class UnionListOperatorState {
         public void cancel() {
 
             isRunning = false;
+        }
+    }
+
+    public static class AggregatingSink extends RichSinkFunction<Long> implements CheckpointedFunction {
+        private transient ListState<Long> unionListState;
+        private List<Long> localState = new ArrayList<>();
+
+        @Override
+        public void close() throws Exception {
+            long sum = 0;
+            for (Long l : localState) {
+                sum += l;
+            }
+            System.out.println("sum: " + sum);
+        }
+
+        @Override
+        public void snapshotState(FunctionSnapshotContext context) throws Exception {
+            unionListState.clear();
+            for (Long l : localState) {
+                unionListState.add(l);
+            }
+
+        }
+
+        @Override
+        public void initializeState(FunctionInitializationContext context) throws Exception {
+
+            ListStateDescriptor<Long> descriptor = new ListStateDescriptor<>(
+                    "unionListState",
+                    Long.class
+            );
+
+            unionListState = context.getOperatorStateStore().getUnionListState(descriptor);
+
+            if (context.isRestored()) {
+                for (Long l : unionListState.get()) {
+                    localState.add(l);
+                }
+            }
+        }
+
+        @Override
+        public void invoke(Long value, Context context) throws Exception {
+            super.invoke(value, context);
         }
     }
 }
