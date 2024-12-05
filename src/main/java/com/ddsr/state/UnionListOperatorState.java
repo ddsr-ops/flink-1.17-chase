@@ -5,6 +5,7 @@ import org.apache.flink.api.common.state.ListStateDescriptor;
 import org.apache.flink.runtime.state.FunctionInitializationContext;
 import org.apache.flink.runtime.state.FunctionSnapshotContext;
 import org.apache.flink.streaming.api.checkpoint.CheckpointedFunction;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
 import org.apache.flink.streaming.api.functions.source.ParallelSourceFunction;
 
@@ -15,6 +16,15 @@ import java.util.List;
  * @author ddsr, created it at 2024/12/3 18:02
  */
 public class UnionListOperatorState {
+
+    public static void main(String[] args) throws Exception {
+        StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironment(2);
+
+        env.addSource(new CustomSource())
+                .addSink(new AggregatingSink());
+
+        env.execute("Union List State Aggregation Example");
+    }
 
     public static class CustomSource implements ParallelSourceFunction<Long>, CheckpointedFunction {
         // volatile keyword illustration:
@@ -59,6 +69,8 @@ public class UnionListOperatorState {
                     ctx.collect(count);
                     // atomic modification of the local list is controlled by checkpoint lock?
                     localList.add(count);
+                    // get the thread id, then print
+                    System.out.println(Thread.currentThread().getId() + " source count: " + count);
                     count++;
                 }
                 Thread.sleep(1000);
@@ -75,10 +87,10 @@ public class UnionListOperatorState {
 
     public static class AggregatingSink extends RichSinkFunction<Long> implements CheckpointedFunction {
         private transient ListState<Long> unionListState;
-        private List<Long> localState = new ArrayList<>();
+        private final List<Long> localState = new ArrayList<>();
 
         @Override
-        public void close() throws Exception {
+        public void close() {
             long sum = 0;
             for (Long l : localState) {
                 sum += l;
@@ -114,7 +126,9 @@ public class UnionListOperatorState {
 
         @Override
         public void invoke(Long value, Context context) throws Exception {
-            super.invoke(value, context);
+            localState.add(value);;
+            // get the thread id, then print
+            System.out.println(Thread.currentThread().getId() + " sink count: " + value);
         }
     }
 }
