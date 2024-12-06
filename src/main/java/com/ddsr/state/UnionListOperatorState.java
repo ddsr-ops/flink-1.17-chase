@@ -126,7 +126,7 @@ public class UnionListOperatorState {
 
         @Override
         public void invoke(Long value, Context context) throws Exception {
-            localState.add(value);;
+            localState.add(value);
             // get the thread id, then print
             System.out.println(Thread.currentThread().getId() + " sink count: " + value);
         }
