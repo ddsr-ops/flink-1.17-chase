@@ -8,6 +8,7 @@ import org.apache.flink.streaming.api.functions.source.SourceFunction;
  *
  * @author ddsr, created it at 2024/12/6 8:51
  */
+@SuppressWarnings("unused")
 public class CheckpointListenerDemo implements SourceFunction<String>, CheckpointListener {
     @Override
     public void notifyCheckpointComplete(long checkpointId) {
