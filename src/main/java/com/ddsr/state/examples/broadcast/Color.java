@@ -6,10 +6,12 @@ package com.ddsr.state.examples.broadcast;
 public class Color {
     private String name;
 
-    public Color() { }
-
-    public Color(String name) {
+    private Color(String name) {
         this.name = name;
+    }
+
+    public static Color valueOf(String color) {
+        return new Color(color);
     }
 
     public String getName() {

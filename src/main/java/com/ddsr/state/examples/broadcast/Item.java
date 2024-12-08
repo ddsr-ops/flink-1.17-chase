@@ -5,22 +5,14 @@ package com.ddsr.state.examples.broadcast;
  */
 // Item class
 public class Item {
-    private String id;
     private Shape shape;
+    private Color color;
 
     public Item() { }
 
-    public Item(String id, Shape shape) {
-        this.id = id;
+    public Item(Color color, Shape shape) {
         this.shape = shape;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
+        this.color = color;
     }
 
     public Shape getShape() {
@@ -31,11 +23,19 @@ public class Item {
         this.shape = shape;
     }
 
+    public Color getColor() {
+        return color;
+    }
+
     @Override
     public String toString() {
         return "Item{" +
-                "id='" + id + '\'' +
-                ", shape=" + shape +
+                "shape=" + shape +
+                ", color=" + color +
                 '}';
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
     }
 }
