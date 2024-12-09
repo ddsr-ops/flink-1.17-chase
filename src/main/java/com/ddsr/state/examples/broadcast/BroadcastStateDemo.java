@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * we have a stream of objects of different colors and shapes and we want to find pairs of objects of the same color
+ * we have a stream of objects of different colors and shapes, we want to find pairs of objects of the same color
  * that follow a certain pattern, e.g. a rectangle followed by a triangle. We assume that the set of interesting
  * patterns evolves over time.
  *
@@ -39,7 +39,7 @@ public class BroadcastStateDemo {
                 .map(r -> {
                     String[] fields = r.split(",");
                     // color, shape
-                    return new Item(Color.valueOf(fields[2]), Shape.valueOf(fields[1]));
+                    return new Item(Color.valueOf(fields[0]), Shape.valueOf(fields[1]));
                 });
 
         // ruleStream contains pairs of shapes that are interesting
