@@ -133,6 +133,8 @@ public class BroadcastStateDemo {
                                 for (Item firstItem : storedFirstItems) {
                                     out.collect(ruleName + " matches " + firstItem.getColor() + " " + firstItem.getShape() + " with " + value.getColor() + " " + value.getShape());
                                 }
+                                // if matched, storedFirstItems will be emptied
+                                storedFirstItems.clear(); // clear state
                             }
 
 
