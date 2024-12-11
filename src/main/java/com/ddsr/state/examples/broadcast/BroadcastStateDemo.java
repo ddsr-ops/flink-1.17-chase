@@ -142,7 +142,7 @@ public class BroadcastStateDemo {
                                 // if the current shape is the same as the first shape, then we store
                                 // the current item
                                 storedFirstItems.add(value);
-                                // todo: the storedFirstItems might have multiple first elements, occupying much
+                                // NOTE: the storedFirstItems might have multiple first elements, occupying much
                                 //  state size
                             }
 
