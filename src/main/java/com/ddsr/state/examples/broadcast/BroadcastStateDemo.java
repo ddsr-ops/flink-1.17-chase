@@ -41,6 +41,8 @@ public class BroadcastStateDemo {
                     // color, shape
                     return new Item(Color.valueOf(fields[0]), Shape.valueOf(fields[1]));
                 });
+        // nc -lk 7777
+        //
 
         // ruleStream contains pairs of shapes that are interesting
         SingleOutputStreamOperator<Rule> ruleStream = env.socketTextStream("192.168.20.126", 8888)
@@ -165,7 +167,8 @@ public class BroadcastStateDemo {
                 .process(
 
                         keyedBroadcastProcessFunction
-                );
+                )
+                .print();
 
 
         env.execute();
