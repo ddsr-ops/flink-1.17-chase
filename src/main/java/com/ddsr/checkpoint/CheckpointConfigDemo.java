@@ -5,6 +5,7 @@ import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.CheckpointingMode;
 import org.apache.flink.streaming.api.environment.CheckpointConfig;
+import org.apache.flink.streaming.api.environment.ExecutionCheckpointingOptions;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.util.Collector;
 
@@ -42,9 +43,11 @@ public class CheckpointConfigDemo {
         //2. your sinks must be transactional (or idempotent)
         env.enableCheckpointing(5000, CheckpointingMode.EXACTLY_ONCE);
         CheckpointConfig checkpointConfig = env.getCheckpointConfig();
+        // Also specify the checkpointing mode through the CheckpointConfig
+        checkpointConfig.setCheckpointingMode(CheckpointingMode.EXACTLY_ONCE);
         // 2、指定检查点的存储位置
         checkpointConfig.setCheckpointStorage("hdfs://hadoop102:8020/chk");
-        // 3、checkpoint的超时时间: 默认10分钟
+        // 3、checkpoint的超时时间: 默认10分钟，如果超过10分钟，会自动放弃
         checkpointConfig.setCheckpointTimeout(60000);
         // 4、同时运行中的checkpoint的最大数量
         checkpointConfig.setMaxConcurrentCheckpoints(1);
@@ -56,6 +59,15 @@ public class CheckpointConfigDemo {
         checkpointConfig.setExternalizedCheckpointCleanup(CheckpointConfig.ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION);
         // 7、允许 checkpoint 连续失败的次数，默认0--》表示checkpoint一失败，job就挂掉
         checkpointConfig.setTolerableCheckpointFailureNumber(10);
+        // 8、enable externalized checkpoints which are retained after job cancellation
+        // available at flink version 1.20
+        // env.getCheckpointConfig().setExternalizedCheckpointRetention(
+        //       ExternalizedCheckpointRetention.RETAIN_ON_CANCELLATION);
+
+        // 9、enable checkpointing with finished tasks
+        Configuration conf = new Configuration();
+        conf.set(ExecutionCheckpointingOptions.ENABLE_CHECKPOINTS_AFTER_TASKS_FINISH, true);
+        env.configure(conf);
 
         //  开启 非对齐检查点（barrier非对齐）
         // 开启的要求： Checkpoint模式必须是精准一次，最大并发必须设为1
@@ -94,7 +106,7 @@ public class CheckpointConfigDemo {
     }
 }
 
-/**
+/*
  *
  * 1、 Barrier对齐： 一个Task收到所有上游的任务的同一个编号的Barrier，才会对自己本地的状态进行备份
  *        精准一次：在Barrier对齐过程中，Barrier后面的数据阻塞等待（不会越过Barrier）
