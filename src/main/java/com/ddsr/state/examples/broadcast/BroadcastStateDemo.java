@@ -42,7 +42,10 @@ public class BroadcastStateDemo {
                     return new Item(Color.valueOf(fields[0]), Shape.valueOf(fields[1]));
                 });
         // nc -lk 7777
-        //
+        // RED,CIRCLE
+        // RED,TRIANGLE
+        // GREEN,CIRCLE
+        // GREEN,SQUARE
 
         // ruleStream contains pairs of shapes that are interesting
         SingleOutputStreamOperator<Rule> ruleStream = env.socketTextStream("192.168.20.126", 8888)
@@ -52,6 +55,10 @@ public class BroadcastStateDemo {
                     return new Rule(fields[0], Shape.valueOf(fields[1]), Shape.valueOf(fields[2]));
 
                 });
+        // rules need to be added at runtime before item stream
+        // nc -lk 8888
+        // RULE1,CIRCLE,SQUARE
+        // RULE2,CIRCLE,TRIANGLE
 
 
         // key the items by color, items with the same color go to the same partition
@@ -133,7 +140,7 @@ public class BroadcastStateDemo {
                                 for (Item firstItem : storedFirstItems) {
                                     out.collect(ruleName + " matches " + firstItem.getColor() + " " + firstItem.getShape() + " with " + value.getColor() + " " + value.getShape());
                                 }
-                                // if matched, storedFirstItems will be emptied
+                                // if matched, all storedFirstItems will be emptied
                                 storedFirstItems.clear(); // clear state
                             }
 
