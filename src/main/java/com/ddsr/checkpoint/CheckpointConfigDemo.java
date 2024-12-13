@@ -64,7 +64,7 @@ public class CheckpointConfigDemo {
         // env.getCheckpointConfig().setExternalizedCheckpointRetention(
         //       ExternalizedCheckpointRetention.RETAIN_ON_CANCELLATION);
 
-        // 9、enable checkpointing with finished tasks
+        // 9、enable checkpointing with finished tasks, for bounded jobs ???
         Configuration conf = new Configuration();
         conf.set(ExecutionCheckpointingOptions.ENABLE_CHECKPOINTS_AFTER_TASKS_FINISH, true);
         env.configure(conf);
