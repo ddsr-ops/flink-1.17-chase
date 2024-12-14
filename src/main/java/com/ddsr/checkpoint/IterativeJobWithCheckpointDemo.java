@@ -17,7 +17,8 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
  * <p>
  * Please note that records in flight in the loop edges (and the state changes associated with them) will be lost during
  * failure.
- *
+ * <p>
+ * Iterative jobs are seldom used in practice except for ML applications.
  * @author ddsr, created it at 2024/12/13 16:57
  */
 public class IterativeJobWithCheckpointDemo {
@@ -32,7 +33,7 @@ public class IterativeJobWithCheckpointDemo {
 
         DataStreamSource<Integer> initialStream = env.fromElements(1, 2, 3, 4, 5);
 
-        // Define the iterative stream
+        // Define the iterative stream, go to the doc of the iterate method for more details
         IterativeStream<Integer> iteration = initialStream.iterate();
 
         // Define the loop body
@@ -44,15 +45,27 @@ public class IterativeJobWithCheckpointDemo {
 
         // Feedback stream
         DataStream<Integer> feedback = iterationBody.filter(
-                (FilterFunction<Integer>) value -> value <= THRESHOLD
+                new FilterFunction<Integer>() {
+                    @Override
+                    public boolean filter(Integer value) {
+                        System.out.println("Feedback: " + value);
+                        return value <= THRESHOLD;
+                    }
+                }
         );
 
         // Output stream
         DataStream<Integer> output = iterationBody.filter(
-                (FilterFunction<Integer>) value -> value > THRESHOLD
+                new FilterFunction<Integer>() {
+                    @Override
+                    public boolean filter(Integer value) {
+                        System.out.println("Output: " + value);
+                        return value > THRESHOLD;
+                    }
+                }
         );
 
-        // Close the iteration with the feedback stream ?
+        // Close the iteration with the feedback stream, go to the doc of the iterate method for more details
         iteration.closeWith(feedback);
 
         output.print();
