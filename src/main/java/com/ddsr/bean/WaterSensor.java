@@ -3,6 +3,15 @@ package com.ddsr.bean;
 import java.util.Objects;
 
 /**
+ * POJOs:
+ * <li>The class must be public..</li>
+ *
+ * <li>It must have a public constructor without arguments (default constructor).</li>
+ *
+ * <li>All fields are either public or must be accessible through getter and setter functions. For a field called foo
+ * the getter and setter methods must be named getFoo() and setFoo().</li>
+ *
+ * <li>The type of a field must be supported by a registered serializer</li>
  * @author ddsr, created it at 2023/8/18 21:40
  */
 public class WaterSensor {
