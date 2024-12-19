@@ -5,16 +5,16 @@ import org.apache.flink.streaming.api.environment.LocalStreamEnvironment;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
 /**
- * see {@link IntValueProcessFunction}
+ * see {@link IntValueReusableProcessFunction}
  * @author ddsr, created it at 2024/12/19 13:49
  */
-public class IntValueProcessFunctionDemo {
+public class IntValueReusableProcessFunctionDemo {
     public static void main(String[] args) throws Exception {
         LocalStreamEnvironment env = StreamExecutionEnvironment.createLocalEnvironment(1);
 
         DataStreamSource<Integer> intStream = env.fromElements(1, 2, 3, 4, 5);
 
-        intStream.process(new IntValueProcessFunction()).print();
+        intStream.process(new IntValueReusableProcessFunction()).print();
 
         env.execute();
     }
