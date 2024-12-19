@@ -12,9 +12,11 @@ import org.apache.flink.util.Collector;
  * @author ddsr, created it at 2024/12/19 9:38
  */
 public class IntValueProcessFunction extends ProcessFunction<Integer, IntValue> { // in, out
+    private final IntValue resuableIntValue = new IntValue();
+
     @Override
     public void processElement(Integer input, Context ctx, Collector<IntValue> out) throws Exception {
-        IntValue intValue = new IntValue(input);
-        out.collect(intValue);
+        resuableIntValue.setValue(input);
+        out.collect(resuableIntValue);
     }
 }
