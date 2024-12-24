@@ -4,6 +4,7 @@ import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
+@SuppressWarnings("Convert2Lambda")
 public class Person1TypeFactoryDemo {
     public static void main(String[] args) throws Exception {
         final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
@@ -12,7 +13,7 @@ public class Person1TypeFactoryDemo {
 
         DataStream<Person> persons = text.map(new MapFunction<String, Person>() {
             @Override
-            public Person map(String value) throws Exception {
+            public Person map(String value) {
                 String[] parts = value.split(",");
                 return new Person(parts[0], Integer.parseInt(parts[1]));
             }
