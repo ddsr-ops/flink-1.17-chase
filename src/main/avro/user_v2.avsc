@@ -4,6 +4,7 @@
   "namespace": "com.ddsr",
   "fields": [
     {"name": "name", "type": "string"},
-    {"name": "age", "type": "int"}
+    {"name": "age", "type": "int"},
+    {"name": "email", "type": ["null", "string"], "default": null}
   ]
 }
