@@ -13,7 +13,6 @@ package com.ddsr.datatypes;
  *   </li>
  * </ul>
  *
- * TODO: Flink’s serializer supports schema evolution for POJO types
  */
 public class Person {
     public String name;
