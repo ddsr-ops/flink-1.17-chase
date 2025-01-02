@@ -5,8 +5,6 @@ import org.apache.flink.api.common.typeutils.TypeSerializerSnapshot;
 import org.apache.flink.core.memory.DataInputView;
 import org.apache.flink.core.memory.DataOutputView;
 
-import java.io.IOException;
-
 /**
  * Avoid sharing the same TypeSerializerSnapshot class across different serializers #
  * Since schema compatibility checks goes through the serializer snapshots, having multiple serializers returning the
@@ -18,6 +16,7 @@ import java.io.IOException;
  *
  * @author ddsr, created it at 2025/1/2 17:20
  */
+@SuppressWarnings("unused")
 public class PersonTypeSerializer extends TypeSerializer<Person> {
     @Override
     public boolean isImmutableType() {
@@ -50,22 +49,22 @@ public class PersonTypeSerializer extends TypeSerializer<Person> {
     }
 
     @Override
-    public void serialize(Person record, DataOutputView target) throws IOException {
+    public void serialize(Person record, DataOutputView target) {
 
     }
 
     @Override
-    public Person deserialize(DataInputView source) throws IOException {
+    public Person deserialize(DataInputView source) {
         return null;
     }
 
     @Override
-    public Person deserialize(Person reuse, DataInputView source) throws IOException {
+    public Person deserialize(Person reuse, DataInputView source) {
         return null;
     }
 
     @Override
-    public void copy(DataInputView source, DataOutputView target) throws IOException {
+    public void copy(DataInputView source, DataOutputView target) {
 
     }
 

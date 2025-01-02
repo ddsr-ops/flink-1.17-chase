@@ -5,7 +5,6 @@ import org.apache.flink.api.common.typeutils.TypeSerializerSnapshot;
 import org.apache.flink.core.memory.DataInputView;
 import org.apache.flink.core.memory.DataOutputView;
 
-import java.io.IOException;
 
 /**
  * Avoid sharing the same TypeSerializerSnapshot class across different serializers #
@@ -18,6 +17,7 @@ import java.io.IOException;
  *
  * @author ddsr, created it at 2025/1/2 17:21
  */
+@SuppressWarnings("unused")
 public class ProductTypeSerializer extends TypeSerializer<Product> {
     @Override
     public boolean isImmutableType() {
@@ -50,22 +50,22 @@ public class ProductTypeSerializer extends TypeSerializer<Product> {
     }
 
     @Override
-    public void serialize(Product record, DataOutputView target) throws IOException {
+    public void serialize(Product record, DataOutputView target) {
 
     }
 
     @Override
-    public Product deserialize(DataInputView source) throws IOException {
+    public Product deserialize(DataInputView source) {
         return null;
     }
 
     @Override
-    public Product deserialize(Product reuse, DataInputView source) throws IOException {
+    public Product deserialize(Product reuse, DataInputView source) {
         return null;
     }
 
     @Override
-    public void copy(DataInputView source, DataOutputView target) throws IOException {
+    public void copy(DataInputView source, DataOutputView target) {
 
     }
 
