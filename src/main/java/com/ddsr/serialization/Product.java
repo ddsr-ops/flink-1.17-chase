@@ -5,6 +5,7 @@ import java.util.Objects;
 /**
  * @author ddsr, created it at 2025/1/2 17:11
  */
+@SuppressWarnings("unused")
 public class Product {
     public String name;
     public double price;
