@@ -10,6 +10,7 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
  *
  * @author ddsr, created it at 2023/8/18 21:47
  */
+@SuppressWarnings("unused")
 public class TransFilter {
     public static void main(String[] args) throws Exception {
 
