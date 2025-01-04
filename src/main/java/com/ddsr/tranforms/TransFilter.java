@@ -6,6 +6,8 @@ import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
 /**
+ * Evaluates a boolean function for each element and retains those for which the function returns true.
+ *
  * @author ddsr, created it at 2023/8/18 21:47
  */
 public class TransFilter {
