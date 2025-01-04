@@ -10,7 +10,7 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 /**
  * @author ddsr, created it at 2025/1/3 16:52
  */
-public class AccumulatorExample {
+public class AccumulatorDemo {
     public static void main(String[] args) throws Exception {
         LocalStreamEnvironment env = StreamExecutionEnvironment.createLocalEnvironment(2);
 
