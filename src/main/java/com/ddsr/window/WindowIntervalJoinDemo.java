@@ -59,6 +59,8 @@ public class WindowIntervalJoinDemo {
                 // leftElement.timestamp + lowerBound <= rightElement.timestamp <= leftElement.timestamp + upperBound
                 // basing on the left stream, boundaries are created
                 .between(Time.seconds(-2), Time.seconds(2))
+                .lowerBoundExclusive() // The lower bound is exclusive
+                .upperBoundExclusive() // The upper bound is exclusive
                 // When two streams are joined together, the process function is called
                 .process(new ProcessJoinFunction<Tuple2<String, Integer>, Tuple3<String, Integer, Integer>, String>() {
                     // The left element and the right element must have been joined together
