@@ -1,5 +1,14 @@
 package com.ddsr.window;
 
+import org.apache.flink.api.common.functions.CoGroupFunction;
+import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.functions.timestamps.AscendingTimestampExtractor;
+import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
+import org.apache.flink.streaming.api.windowing.time.Time;
+import org.apache.flink.util.Collector;
+
 /**
  * A demo of window-coGroup function
  * <p><strong>join() method</strong>
@@ -63,5 +72,80 @@ package com.ddsr.window;
  *     </tr>
  * </table>
  */
+@SuppressWarnings({"deprecation", "Convert2Lambda"})
 public class WindowCoGroupDemo {
+    public static void main(String[] args) throws Exception {
+        // Set up the execution environment
+        final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        env.setParallelism(1);
+
+        // Create user activity stream with timestamps and watermarks
+        DataStream<Tuple2<String, Long>> userActivityStream = env.fromElements(
+                new Tuple2<>("user1", 100L),
+                new Tuple2<>("user2", 150L),
+                new Tuple2<>("user1", 200L),
+                new Tuple2<>("user3", 250L),
+                new Tuple2<>("user2", 300L)
+        ).assignTimestampsAndWatermarks(new AscendingTimestampExtractor<Tuple2<String, Long>>() {
+            @Override
+            public long extractAscendingTimestamp(Tuple2<String, Long> element) {
+                return element.f1;
+            }
+        });
+
+        // Create user registration stream with timestamps and watermarks
+        DataStream<Tuple2<String, Long>> userRegistrationStream = env.fromElements(
+                new Tuple2<>("user1", 50L),
+                new Tuple2<>("user2", 100L),
+                new Tuple2<>("user3", 200L),
+                new Tuple2<>("user4", 300L)
+        ).assignTimestampsAndWatermarks(new AscendingTimestampExtractor<Tuple2<String, Long>>() {
+            @Override
+            public long extractAscendingTimestamp(Tuple2<String, Long> element) {
+                return element.f1;
+            }
+        });
+
+        // Co-group the streams
+        DataStream<String> result = userActivityStream
+                .coGroup(userRegistrationStream)
+                .where(key -> key.f0)
+                .equalTo(key -> key.f0)
+                .window(TumblingEventTimeWindows.of(Time.seconds(10)))
+                .apply(new CoGroupFunction<Tuple2<String, Long>, Tuple2<String, Long>, String>() {
+                    @Override
+                    public void coGroup(
+                            Iterable<Tuple2<String, Long>> activities,
+                            Iterable<Tuple2<String, Long>> registrations,
+                            Collector<String> out) {
+                        Long registrationTime = null;
+                        Long firstActivityTime;
+
+                        // Collect registration time
+                        for (Tuple2<String, Long> reg : registrations) {
+                            registrationTime = reg.f1;
+                            break; // Assuming one registration per window
+                        }
+
+                        // Find the first activity time
+                        Long minActivityTime = Long.MAX_VALUE;
+                        for (Tuple2<String, Long> act : activities) {
+                            if (act.f1 < minActivityTime) {
+                                minActivityTime = act.f1;
+                            }
+                        }
+                        firstActivityTime = minActivityTime;
+
+                        // Calculate time difference if both times are available
+                        if (registrationTime != null) {
+                            long timeDifference = firstActivityTime - registrationTime;
+                            out.collect("User: " + activities.iterator().next().f0 +
+                                    ", Time Difference: " + timeDifference + " ms");
+                        }
+                    }
+                });
+        result.print();
+
+        env.execute();
+    }
 }
