@@ -58,7 +58,7 @@ import org.apache.flink.util.Collector;
  *     <tr>
  *         <td>Window Requirement</td>
  *         <td>Requires a time window</td>
- *         <td>Can be used with or without a window</td>
+ *         <td>Can be used with or without a window(in general with a window)</td>
  *     </tr>
  *     <tr>
  *         <td>Use Case</td>
@@ -98,7 +98,7 @@ public class WindowCoGroupDemo {
                 new Tuple2<>("user1", 50L),
                 new Tuple2<>("user2", 100L),
                 new Tuple2<>("user3", 200L),
-                new Tuple2<>("user4", 300L)
+                new Tuple2<>("user4", 300L) // no activities for this user
         ).assignTimestampsAndWatermarks(new AscendingTimestampExtractor<Tuple2<String, Long>>() {
             @Override
             public long extractAscendingTimestamp(Tuple2<String, Long> element) {
@@ -139,7 +139,7 @@ public class WindowCoGroupDemo {
                         // Calculate time difference if both times are available
                         if (registrationTime != null) {
                             long timeDifference = firstActivityTime - registrationTime;
-                            out.collect("User: " + activities.iterator().next().f0 +
+                            out.collect("User: " + registrations.iterator().next().f0 +
                                     ", Time Difference: " + timeDifference + " ms");
                         }
                     }
