@@ -13,6 +13,9 @@ public class OperatorChain {
     public static void main(String[] args) throws Exception {
         LocalStreamEnvironment env = StreamExecutionEnvironment.createLocalEnvironment(1);
 
+        // disable operator chaining globally, which is not recommended
+        env.disableOperatorChaining();
+
         DataStreamSource<Integer> ds = env.fromElements(1, 2, 3, 4, 5);
 
         ds.filter(x -> x % 2 == 0)
@@ -21,6 +24,13 @@ public class OperatorChain {
                 .map(x -> x * 2)
                 .startNewChain()
                 .map(x -> "==" + x + "==")
+                .print();
+
+
+        ds.map(x -> x * 2)
+                // do chain the first map operator
+                .disableChaining()
+                .map(x -> "--" + x + "--")
                 .print();
 
 
