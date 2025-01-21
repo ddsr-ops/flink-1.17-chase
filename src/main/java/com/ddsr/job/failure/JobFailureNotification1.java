@@ -25,6 +25,8 @@ public class JobFailureNotification1 {
            nc -lk 7777
            1
            2
+           0 --> the first time to restart
+           0 --> the second time to restart
            0 --> mock an application failure, which incurs the job failure
          */
         env.socketTextStream("192.168.20.126", 7777)

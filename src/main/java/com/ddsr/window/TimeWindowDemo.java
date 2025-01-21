@@ -35,6 +35,9 @@ public class TimeWindowDemo {
         // 1. 窗口分配器
         WindowedStream<WaterSensor, String, TimeWindow> sensorWS = sensorKS
                 .window(TumblingProcessingTimeWindows.of(Time.seconds(10))); // Tumbling window
+        // An important use case for offsets is to adjust windows to timezones other than UTC-0. For example, in
+        // China you would have to specify an offset of Time.hours(-8).
+//                .window(TumblingProcessingTimeWindows.of(Time.seconds(10), Time.hours(-8))); // Tumbling window
 //                .window(SlidingProcessingTimeWindows.of(Time.seconds(10), Time.seconds(5))); // Sliding window, window length = 10, slide length = 5
 //                .window(ProcessingTimeSessionWindows.withGap(Time.seconds(5))); // Session window, if the gap exceeds 5s, it is a window
 //                .window(ProcessingTimeSessionWindows.withDynamicGap(new SessionWindowTimeGapExtractor<WaterSensor>() {
