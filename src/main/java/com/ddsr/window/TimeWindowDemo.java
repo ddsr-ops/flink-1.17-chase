@@ -77,7 +77,7 @@ public class TimeWindowDemo {
     }
 }
 
-/**
+/*
  * Trigger, Evictor, Various windows have their own implementations of them, which are implemented by ourselves.
  *
  * When time window trigger, such as time tumbling window?
