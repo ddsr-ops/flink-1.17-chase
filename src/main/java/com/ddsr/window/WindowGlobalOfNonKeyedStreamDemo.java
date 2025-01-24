@@ -20,7 +20,7 @@ import org.apache.flink.util.Collector;
  * @author ddsr, created it at 2025/1/24 10:11
  */
 @SuppressWarnings("Convert2Lambda")
-public class WindowGlobalDemo {
+public class WindowGlobalOfNonKeyedStreamDemo {
     public static void main(String[] args) throws Exception {
         final LocalStreamEnvironment env = StreamExecutionEnvironment.createLocalEnvironment(1);
 
